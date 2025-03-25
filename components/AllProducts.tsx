@@ -1,5 +1,6 @@
 import { useGetProductsQuery } from "@/redux/api/productApi";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
 import { Card } from "react-native-paper";
 
@@ -11,30 +12,33 @@ export default function AllProducts() {
   const [search, setSearch] = useState("");
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
-  // Fetch products
-  const { data, isFetching, refetch, isLoading, isError } = useGetProductsQuery(
-    {
-      limit: PAGE_SIZE,
-      page,
-      search,
-    }
-  );
+  const { data, isFetching, isLoading, isError } = useGetProductsQuery({
+    limit: PAGE_SIZE,
+    page,
+    search,
+  });
 
   useEffect(() => {
-    if (data && data.products) {
+    if (data?.products) {
       setProducts((prev) =>
         page === 1 ? data.products : [...prev, ...data.products]
       );
-      setIsFetchingMore(false);
     }
+    setIsFetchingMore(false);
   }, [data]);
 
-  const loadMore = () => {
-    if (!isFetching && !isFetchingMore && data?.products.length === PAGE_SIZE) {
+  const loadMore = useCallback(() => {
+    if (
+      !isFetching &&
+      !isFetchingMore &&
+      products.length < (data?.totalProducts || 0)
+    ) {
       setIsFetchingMore(true);
       setPage((prev) => prev + 1);
     }
-  };
+  }, [isFetching, isFetchingMore, products.length, data?.totalProducts]);
+
+  const router = useRouter();
 
   if (isLoading) {
     return (
@@ -56,11 +60,21 @@ export default function AllProducts() {
     <View style={styles.container}>
       <FlatList
         data={products}
-        keyExtractor={(item, index) => `${item._id}-${index}`}
+        keyExtractor={(item) =>
+          item?._id + Math.random().toString() || Math.random().toString()
+        }
         numColumns={2}
         renderItem={({ item }) => (
-          <Card style={styles.card}>
-            <Image source={{ uri: item.image[0] }} style={styles.image} />
+          <Card
+            style={styles.card}
+            onPress={() => router.push(`/product/${item._id}`)}
+          >
+            <Image
+              source={{
+                uri: item.image?.[0] || "https://via.placeholder.com/150",
+              }}
+              style={styles.image}
+            />
             <Text style={styles.name}>
               {item.name.length > 30
                 ? `${item.name.slice(0, 30)}...`
@@ -68,15 +82,9 @@ export default function AllProducts() {
             </Text>
             <Text style={styles.price}>
               {"\u09F3"}
-              {/* {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} */}
-              {item?.priceByVariant &&
-              item?.priceByVariant[0]?.price
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                ? `${item?.priceByVariant[0]?.price}`
-                : `${item.price
-                    .toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}
+              {item?.priceByVariant?.[0]?.price
+                ? item.priceByVariant[0].price.toLocaleString()
+                : item.price.toLocaleString()}
             </Text>
           </Card>
         )}
@@ -101,6 +109,7 @@ const styles = {
     flex: 1,
     padding: 10,
     backgroundColor: "#f9fafc",
+    marginBottom: 100,
   },
   card: {
     flex: 1,
