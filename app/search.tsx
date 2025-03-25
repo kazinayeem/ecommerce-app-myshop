@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function Search() {
+  const [searchText, setSearchText] = React.useState<string>("");
   const searchInputRef = useRef<TextInput | null>(null);
   const router = useRouter();
   useEffect(() => {
@@ -33,14 +34,28 @@ export default function Search() {
           />
           <TextInput
             ref={searchInputRef}
+            onChangeText={(text) => setSearchText(text)}
+            value={searchText}
             placeholder="Search"
             placeholderTextColor="#aaa"
             style={styles.input}
+            keyboardType="default"
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="search"
+            onSubmitEditing={() => {
+              if (searchText) {
+                router.push(`/searched/${searchText}`);
+              }
+            }}
           />
         </View>
 
         {/* Search Button */}
-        <Pressable style={styles.searchButton}>
+        <Pressable
+          style={styles.searchButton}
+          onPress={() => router.push(`/searched/${searchText}`)}
+        >
           <Text style={styles.searchText}>Search</Text>
         </Pressable>
       </View>

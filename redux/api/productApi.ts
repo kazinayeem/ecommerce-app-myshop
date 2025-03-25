@@ -8,11 +8,15 @@ const productApi = createApi({
   tagTypes: ["Products"],
   endpoints: (builder) => ({
     getProducts: builder.query({
-      query: ({ limit, page, search }) => {
+      query: ({ limit, page, search, categoryid }) => {
         let query = `/products?limit=${limit}&page=${page}`;
+        if (categoryid) {
+          query += `&category=${encodeURIComponent(categoryid)}`;
+        }
         if (search) {
           query += `&search=${search}`;
         }
+
         return query;
       },
       providesTags: ["Products"],

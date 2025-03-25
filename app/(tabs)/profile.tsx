@@ -1,33 +1,82 @@
+import { useAppDispatch, useAppSelector } from "@/redux/hook/hooks";
+import { logout } from "@/redux/reducer/authReducer";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Avatar } from "react-native-paper";
 
 export default function Profile() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const user = useAppSelector((state) => state.auth.user);
+  const logoutHandeler = async () => {
+    await AsyncStorage.removeItem("user");
+    dispatch(logout());
+    router.replace("/");
+  };
+
   return (
     <View style={styles.container}>
-      {/* Profile Image */}
-      <Image
-        source={{ uri: "https://via.placeholder.com/100" }}
-        style={styles.profileImage}
-      />
+      {isAuthenticated ? (
+        <>
+          <Avatar.Icon size={24} icon="account" style={styles.profileImage} />
+          <Text style={styles.name}>{user?.name || "nayeem"}</Text>
+          <Text style={styles.email}>{user?.email}</Text>
 
-      {/* User Information */}
-      <Text style={styles.name}>John Doe</Text>
-      <Text style={styles.email}>johndoe@example.com</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push("/user")}
+          >
+            <Text style={styles.buttonText}>User Information</Text>
+          </TouchableOpacity>
 
-      {/* Edit Profile Button */}
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Edit Profile</Text>
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push("/user/order")}
+          >
+            <Text style={styles.buttonText}>Orders</Text>
+          </TouchableOpacity>
 
-      {/* Logout Button */}
-      <TouchableOpacity style={[styles.button, styles.logoutButton]}>
-        <Text style={[styles.buttonText, { color: "#fff" }]}>Logout</Text>
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push("/user/address")}
+          >
+            <Text style={styles.buttonText}>Address</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.logoutButton]}
+            onPress={logoutHandeler}
+          >
+            <Text style={[styles.buttonText, { color: "#fff" }]}>Logout</Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        // Guest View
+        <>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              router.push("/auth/login");
+            }}
+          >
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push("/auth/register")}
+          >
+            <Text style={styles.buttonText}>Register</Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,

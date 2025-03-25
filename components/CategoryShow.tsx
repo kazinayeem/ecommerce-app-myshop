@@ -1,5 +1,5 @@
 import { useGetCategoriesQuery } from "@/redux/api/categoryApi";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import React from "react";
 import {
   FlatList,
@@ -11,6 +11,7 @@ import {
 import { Text } from "react-native-paper";
 
 export default function CategoryShow() {
+  const router = useRouter();
   const {
     data: categoriesData = [],
     isLoading,
@@ -44,7 +45,10 @@ export default function CategoryShow() {
         data={categoriesData}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <View style={styles.itemContainer}>
+          <TouchableOpacity
+            style={styles.itemContainer}
+            onPress={() => router.push(`/category/${item._id}`)}
+          >
             <Image
               source={{ uri: item.image }}
               style={styles.image}
@@ -53,7 +57,7 @@ export default function CategoryShow() {
             <Text variant="titleMedium" style={styles.itemText}>
               {item.name}
             </Text>
-          </View>
+          </TouchableOpacity>
         )}
         horizontal
         showsHorizontalScrollIndicator={false}

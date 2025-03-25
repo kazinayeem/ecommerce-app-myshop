@@ -2,7 +2,9 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const ordersApi = createApi({
   reducerPath: "ordersApi",
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.EXPO_PUBLIC_SERVER_PORT }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "https://myshop-2-production.up.railway.app/api",
+  }),
   tagTypes: ["Orders"],
   endpoints: (builder) => ({
     getOrders: builder.query({

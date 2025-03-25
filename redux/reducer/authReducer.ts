@@ -29,13 +29,9 @@ const authSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
     },
-    setUserandToken(
-      state,
-      action: PayloadAction<{ user: User; token: string }>
-    ) {
+    setUserandToken(state, action: PayloadAction<{ user: User }>) {
       state.user = action.payload.user;
       state.isAuthenticated = true;
-      localStorage.setItem("token", action.payload.token);
     },
   },
 });

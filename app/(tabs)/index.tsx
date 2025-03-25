@@ -16,7 +16,7 @@ export default function Index() {
           <>
             <ImageSlider />
             <CategoryShow />
-            <AllProducts />
+            <AllProducts mb={100} />
           </>
         }
         keyExtractor={(_, index) => index.toString()}

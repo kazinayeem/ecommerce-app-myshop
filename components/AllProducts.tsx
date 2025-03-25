@@ -6,16 +6,26 @@ import { Card } from "react-native-paper";
 
 const PAGE_SIZE = 10;
 
-export default function AllProducts() {
+export default function AllProducts({
+  search,
+  categoryid,
+  mb,
+  colnum = 2,
+}: {
+  search?: string;
+  categoryid?: string;
+  mb?: number;
+  colnum?: number;
+}) {
   const [page, setPage] = useState(1);
   const [products, setProducts] = useState<any[]>([]);
-  const [search, setSearch] = useState("");
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
-  const { data, isFetching, isLoading, isError } = useGetProductsQuery({
+  const { data, isFetching, isLoading, isError, error } = useGetProductsQuery({
     limit: PAGE_SIZE,
     page,
     search,
+    categoryid,
   });
 
   useEffect(() => {
@@ -57,13 +67,27 @@ export default function AllProducts() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginBottom: mb || 0 }]}>
+      {search && (
+        <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+          Search Results for "{search}"
+        </Text>
+      )}
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        {products.length === 0 ? (
+          <View style={styles.loadingContainer}>
+            <Text>No products found.</Text>
+          </View>
+        ) : null}
+      </View>
       <FlatList
         data={products}
         keyExtractor={(item) =>
           item?._id + Math.random().toString() || Math.random().toString()
         }
-        numColumns={2}
+        numColumns={colnum}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
           <Card
             style={styles.card}
@@ -109,7 +133,6 @@ const styles = {
     flex: 1,
     padding: 10,
     backgroundColor: "#f9fafc",
-    marginBottom: 100,
   },
   card: {
     flex: 1,
