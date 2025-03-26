@@ -1,9 +1,17 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const addressApi = createApi({
   reducerPath: "addressApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://myshop-2-production.up.railway.app/api",
+    prepareHeaders: async (headers) => {
+      const token = await AsyncStorage.getItem("token");
+      if (token) {
+        headers.set("Authorization", `${token}`);
+      }
+      return headers;
+    },
   }),
   tagTypes: ["address"],
   endpoints: (builder) => ({

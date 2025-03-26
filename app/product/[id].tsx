@@ -5,9 +5,20 @@ import { useAppDispatch } from "@/redux/hook/hooks";
 import { addItem } from "@/redux/reducer/cartReducer";
 import { useLocalSearchParams } from "expo-router/build/hooks";
 import React, { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { Button, RadioButton, SegmentedButtons } from "react-native-paper"; // Import RadioButton
-
+import { useSharedValue } from "react-native-reanimated";
+import Carousel, {
+  ICarouselInstance,
+  Pagination,
+} from "react-native-reanimated-carousel";
 interface ProductType {
   name: string;
   value: string;
@@ -18,6 +29,16 @@ interface ProductType {
 }
 
 export default function Product() {
+  const width = Dimensions.get("window").width;
+  const ref = React.useRef<ICarouselInstance>(null);
+  const progress = useSharedValue<number>(0);
+
+  const onPressPagination = (index: number) => {
+    ref.current?.scrollTo({
+      count: index - progress.value,
+      animated: true,
+    });
+  };
   const dispatch = useAppDispatch();
   const [selectedProduct, setSelectedProduct] = useState<ProductType>({
     name: "",
@@ -88,23 +109,37 @@ export default function Product() {
     <View style={styles.container}>
       <SearchBar />
 
-      <ScrollView>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled={true}
+      >
         {/* Product Images */}
         <View style={styles.imageContainer}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {productImages.length > 0 ? (
-              productImages.map((image: string, index: number) => (
-                <Image
-                  key={index}
-                  source={{ uri: image }}
-                  style={styles.productImage}
-                  resizeMode="cover"
-                />
-              ))
-            ) : (
-              <Text>No images available</Text>
+          <Carousel
+            ref={ref}
+            width={width}
+            loop={true}
+            autoPlay={true}
+            autoPlayInterval={2000}
+            height={width / 2}
+            data={data.image}
+            onProgressChange={progress}
+            renderItem={({ index }) => (
+              <Image
+                key={index}
+                source={{ uri: data.image[index] }}
+                style={styles.productImage}
+                resizeMode="cover"
+              />
             )}
-          </ScrollView>
+          />
+          <Pagination.Basic
+            progress={progress}
+            data={data.image}
+            dotStyle={{ backgroundColor: "rgba(0,0,0,0.2)", borderRadius: 50 }}
+            containerStyle={{ gap: 5, marginTop: 10 }}
+            onPress={onPressPagination}
+          />
         </View>
 
         {/* Product Title */}
@@ -234,6 +269,9 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     marginRight: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
   },
   productTitle: {
     fontSize: 24,

@@ -4,14 +4,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Avatar } from "react-native-paper";
+import { Avatar, Card, Divider } from "react-native-paper";
 
 export default function Profile() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const user = useAppSelector((state) => state.auth.user);
-  const logoutHandeler = async () => {
+
+  const logoutHandler = async () => {
     await AsyncStorage.removeItem("user");
     dispatch(logout());
     router.replace("/");
@@ -20,58 +21,64 @@ export default function Profile() {
   return (
     <View style={styles.container}>
       {isAuthenticated ? (
-        <>
-          <Avatar.Icon size={24} icon="account" style={styles.profileImage} />
-          <Text style={styles.name}>{user?.name || "nayeem"}</Text>
-          <Text style={styles.email}>{user?.email}</Text>
+        <Card style={styles.profileCard}>
+          <Card.Content style={styles.profileContent}>
+            <Avatar.Icon size={80} icon="account" style={styles.profileImage} />
+            <Text style={styles.name}>{user?.name || "Nayeem"}</Text>
+            <Text style={styles.email}>{user?.email}</Text>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/user")}
-          >
-            <Text style={styles.buttonText}>User Information</Text>
-          </TouchableOpacity>
+            <Divider style={styles.divider} />
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/user/order")}
-          >
-            <Text style={styles.buttonText}>Orders</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => router.push("/user")}
+            >
+              <Text style={styles.buttonText}>User Information</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/user/address")}
-          >
-            <Text style={styles.buttonText}>Address</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => router.push("/user/order")}
+            >
+              <Text style={styles.buttonText}>Orders</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.button, styles.logoutButton]}
-            onPress={logoutHandeler}
-          >
-            <Text style={[styles.buttonText, { color: "#fff" }]}>Logout</Text>
-          </TouchableOpacity>
-        </>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => router.push("/user/address")}
+            >
+              <Text style={styles.buttonText}>Address</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.button, styles.logoutButton]}
+              onPress={logoutHandler}
+            >
+              <Text style={[styles.buttonText, { color: "#fff" }]}>Logout</Text>
+            </TouchableOpacity>
+          </Card.Content>
+        </Card>
       ) : (
         // Guest View
-        <>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              router.push("/auth/login");
-            }}
-          >
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
+        <Card style={styles.profileCard}>
+          <Card.Content style={styles.profileContent}>
+            <Text style={styles.guestText}>You are not logged in</Text>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/auth/register")}
-          >
-            <Text style={styles.buttonText}>Register</Text>
-          </TouchableOpacity>
-        </>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => router.push("/auth/login")}
+            >
+              <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => router.push("/auth/register")}
+            >
+              <Text style={styles.buttonText}>Register</Text>
+            </TouchableOpacity>
+          </Card.Content>
+        </Card>
       )}
     </View>
   );
@@ -80,21 +87,32 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f9fafc",
+    backgroundColor: "#f4f4f4",
     padding: 20,
   },
+  profileCard: {
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    elevation: 5,
+    padding: 20,
+    marginBottom: 20,
+  },
+  profileContent: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     marginBottom: 15,
+    backgroundColor: "#e2e2e2",
   },
   name: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#333",
+    marginBottom: 5,
   },
   email: {
     fontSize: 16,
@@ -102,18 +120,32 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: "#e2b9cf",
-    paddingVertical: 10,
-    paddingHorizontal: 25,
-    borderRadius: 8,
+    backgroundColor: "#4c7ef2", // Main button color
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 10,
     marginTop: 10,
+    width: "100%",
+    alignItems: "center",
   },
   buttonText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
+    color: "#fff",
   },
   logoutButton: {
-    backgroundColor: "#ce0c82",
+    backgroundColor: "#e74c3c", // Red logout button color
+  },
+  guestText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 20,
+  },
+  divider: {
+    marginVertical: 15,
+    width: "100%",
+    borderColor: "#e0e0e0",
+    borderWidth: 0.5,
   },
 });

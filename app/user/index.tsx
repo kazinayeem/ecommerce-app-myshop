@@ -1,10 +1,194 @@
-import React from "react";
-import { Text, View } from "react-native";
+import {
+  useGetUserByIdQuery,
+  useUpdateUserMutation,
+} from "@/redux/api/userApi";
+import { useAppSelector } from "@/redux/hook/hooks";
+import { useFocusEffect } from "expo-router";
+import React, { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { Button, FAB, TextInput } from "react-native-paper";
 
 export default function Index() {
+  const user = useAppSelector((state) => state.auth.user);
+  const { data, isLoading, isError, refetch } = useGetUserByIdQuery(
+    user?.id as string
+  );
+  const [updateUser] = useUpdateUserMutation();
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
+  const [isEditing, setIsEditing] = useState(false);
+  const [username, setUsername] = useState(data?.username || "");
+  const [email, setEmail] = useState(data?.email || "");
+  const [mobileNumber, setMobileNumber] = useState(data?.mobileNumber || "");
+
+  const handleEdit = () => setIsEditing(true);
+
+  const handleSave = async () => {
+    try {
+      await updateUser({
+        id: user?.id,
+        username,
+        email,
+        mobileNumber,
+      }).unwrap();
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating user data:", error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.centeredContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={styles.centeredContainer}>
+        <Text style={styles.errorText}>Error loading user data</Text>
+      </View>
+    );
+  }
+
   return (
-    <View>
-      <Text>index</Text>
+    <View style={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.title}>User Profile</Text>
+
+        {/* Username */}
+        <TextInput
+          label="Username"
+          value={username}
+          onChangeText={setUsername}
+          style={styles.input}
+          editable={isEditing}
+          mode="outlined"
+          textColor="black"
+          selectionColor="black"
+          underlineColor="black"
+          activeUnderlineColor="black"
+          placeholderTextColor="black"
+        />
+
+        {/* Email */}
+        <TextInput
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          style={styles.input}
+          editable={isEditing}
+          mode="outlined"
+          textColor="black"
+          selectionColor="black"
+          underlineColor="black"
+          activeUnderlineColor="black"
+          placeholderTextColor="black"
+        />
+
+        {/* Mobile Number */}
+        <TextInput
+          label="Mobile Number"
+          value={mobileNumber}
+          onChangeText={setMobileNumber}
+          style={styles.input}
+          editable={isEditing}
+          mode="outlined"
+          keyboardType="numeric"
+          textColor="black"
+          selectionColor="black"
+          underlineColor="black"
+          activeUnderlineColor="black"
+          placeholderTextColor="black"
+        />
+
+        {/* Edit and Save buttons */}
+        <View style={styles.buttonsContainer}>
+          {!isEditing ? (
+            <Button
+              mode="contained"
+              onPress={handleEdit}
+              style={styles.editButton}
+            >
+              Edit
+            </Button>
+          ) : (
+            <Button
+              mode="contained"
+              onPress={handleSave}
+              style={styles.saveButton}
+            >
+              Save
+            </Button>
+          )}
+        </View>
+      </View>
+
+      {/* Floating Action Button to trigger edit */}
+      {!isEditing && (
+        <FAB style={styles.fab} icon="pencil" onPress={handleEdit} />
+      )}
     </View>
   );
 }
+
+// Styles
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#fff",
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 20,
+    elevation: 4,
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "black",
+  },
+  input: {
+    marginBottom: 12,
+    backgroundColor: "#fff", // White background for inputs
+    color: "black", // Black text color for inputs
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+  },
+  editButton: {
+    backgroundColor: "#6200ea",
+    color: "white",
+  },
+  saveButton: {
+    backgroundColor: "#6200ea",
+    color: "white",
+  },
+  fab: {
+    position: "absolute",
+    right: 20,
+    bottom: 20,
+    backgroundColor: "#6200ea",
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "red",
+    textAlign: "center",
+  },
+});

@@ -1,7 +1,12 @@
+import { useAppSelector } from "@/redux/hook/hooks";
+import { RootState } from "@/redux/store";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Tabs } from "expo-router";
 
 export default function RootLayout() {
+  const cartItem = useAppSelector(
+    (state: RootState) => state.cart.items.length
+  );
   return (
     <Tabs
       screenOptions={{
@@ -48,6 +53,7 @@ export default function RootLayout() {
         name="cart"
         options={{
           title: "Cart",
+          tabBarBadge: cartItem,
           tabBarIcon: ({ color }) => (
             <MaterialIcons name="shopping-cart" size={24} color={color} />
           ),
