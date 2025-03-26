@@ -4,25 +4,33 @@ import {
 } from "@/redux/api/userApi";
 import { useAppSelector } from "@/redux/hook/hooks";
 import { useFocusEffect } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Button, FAB, TextInput } from "react-native-paper";
 
 export default function Index() {
   const user = useAppSelector((state) => state.auth.user);
-  const { data, isLoading, isError, refetch } = useGetUserByIdQuery(
+  const { data, isLoading, isError, refetch, isSuccess } = useGetUserByIdQuery(
     user?.id as string
   );
   const [updateUser] = useUpdateUserMutation();
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [mobileNumber, setMobileNumber] = useState<string>("");
+
   useFocusEffect(
     React.useCallback(() => {
       refetch();
     }, [refetch])
   );
-  const [isEditing, setIsEditing] = useState(false);
-  const [username, setUsername] = useState(data?.username || "");
-  const [email, setEmail] = useState(data?.email || "");
-  const [mobileNumber, setMobileNumber] = useState(data?.mobileNumber || "");
+  useEffect(() => {
+    if (data) {
+      setUsername(data.username);
+      setEmail(data.email);
+      setMobileNumber(data.mobileNumber);
+    }
+  }, [data]);
 
   const handleEdit = () => setIsEditing(true);
 
@@ -34,6 +42,7 @@ export default function Index() {
         email,
         mobileNumber,
       }).unwrap();
+
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating user data:", error);
@@ -58,76 +67,72 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.title}>User Profile</Text>
+      {isSuccess && (
+        <>
+          <View style={styles.card}>
+            <Text style={styles.title}>User Profile</Text>
 
-        {/* Username */}
-        <TextInput
-          label="Username"
-          value={username}
-          onChangeText={setUsername}
-          style={styles.input}
-          editable={isEditing}
-          mode="outlined"
-          textColor="black"
-          selectionColor="black"
-          underlineColor="black"
-          activeUnderlineColor="black"
-          placeholderTextColor="black"
-        />
+            {/* Username */}
+            <TextInput
+              label="Username"
+              value={username}
+              onChangeText={setUsername}
+              style={styles.input}
+              editable={isEditing}
+              mode="outlined"
+              textColor="black"
+              selectionColor="black"
+              underlineColor="black"
+              activeUnderlineColor="black"
+              placeholderTextColor="black"
+            />
 
-        {/* Email */}
-        <TextInput
-          label="Email"
-          value={email}
-          onChangeText={setEmail}
-          style={styles.input}
-          editable={isEditing}
-          mode="outlined"
-          textColor="black"
-          selectionColor="black"
-          underlineColor="black"
-          activeUnderlineColor="black"
-          placeholderTextColor="black"
-        />
+            {/* Email */}
+            <TextInput
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              style={styles.input}
+              editable={isEditing}
+              mode="outlined"
+              textColor="black"
+              selectionColor="black"
+              underlineColor="black"
+              activeUnderlineColor="black"
+              placeholderTextColor="black"
+            />
 
-        {/* Mobile Number */}
-        <TextInput
-          label="Mobile Number"
-          value={mobileNumber}
-          onChangeText={setMobileNumber}
-          style={styles.input}
-          editable={isEditing}
-          mode="outlined"
-          keyboardType="numeric"
-          textColor="black"
-          selectionColor="black"
-          underlineColor="black"
-          activeUnderlineColor="black"
-          placeholderTextColor="black"
-        />
+            {/* Mobile Number */}
+            <TextInput
+              label="Mobile Number"
+              value={mobileNumber}
+              onChangeText={(text) => setMobileNumber(text)}
+              style={styles.input}
+              editable={isEditing}
+              mode="outlined"
+              keyboardType="numeric"
+              textColor="black"
+              selectionColor="black"
+              underlineColor="black"
+              activeUnderlineColor="black"
+              placeholderTextColor="black"
+            />
 
-        {/* Edit and Save buttons */}
-        <View style={styles.buttonsContainer}>
-          {!isEditing ? (
-            <Button
-              mode="contained"
-              onPress={handleEdit}
-              style={styles.editButton}
-            >
-              Edit
-            </Button>
-          ) : (
-            <Button
-              mode="contained"
-              onPress={handleSave}
-              style={styles.saveButton}
-            >
-              Save
-            </Button>
-          )}
-        </View>
-      </View>
+            {/* Edit and Save buttons */}
+            <View style={styles.buttonsContainer}>
+              {isEditing && (
+                <Button
+                  mode="contained"
+                  onPress={handleSave}
+                  style={styles.saveButton}
+                >
+                  Save
+                </Button>
+              )}
+            </View>
+          </View>
+        </>
+      )}
 
       {/* Floating Action Button to trigger edit */}
       {!isEditing && (

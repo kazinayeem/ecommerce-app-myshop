@@ -1,6 +1,7 @@
 import HeaderBar from "@/components/HeaderBar";
 import { useGetCategoriesQuery } from "@/redux/api/categoryApi";
 import { Subcategory } from "@/redux/type";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
@@ -12,6 +13,7 @@ import {
 } from "react-native";
 import { ActivityIndicator, Divider } from "react-native-paper";
 function Category() {
+  const router = useRouter();
   const [subcategory, setSubcategory] = useState<Subcategory[]>([]);
   const {
     data: categoriesData = [],
@@ -56,6 +58,7 @@ function Category() {
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
               <TouchableOpacity
+                activeOpacity={0.7}
                 style={styles.categoryItem}
                 onPress={() => setSubcategory(item.subcategory || [])}
               >
@@ -79,7 +82,10 @@ function Category() {
               keyExtractor={(item, index) => index.toString()}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => (
-                <View style={styles.subcategoryItem}>
+                <TouchableOpacity
+                  style={styles.subcategoryItem}
+                  onPress={() => router.push(`/subcategory/${item._id}`)}
+                >
                   <Image
                     source={{ uri: item.image }}
                     style={styles.subcategoryImage}
@@ -89,7 +95,7 @@ function Category() {
                       ? `${item.name.slice(0, 15)}..`
                       : item.name}
                   </Text>
-                </View>
+                </TouchableOpacity>
               )}
             />
           ) : (

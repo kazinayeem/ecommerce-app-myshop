@@ -3,12 +3,14 @@ import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
 import { Card } from "react-native-paper";
+import NoFound from "./NoFound";
 
 const PAGE_SIZE = 10;
 
 export default function AllProducts({
   search,
   categoryid,
+  subcategoryid,
   mb,
   colnum = 2,
 }: {
@@ -16,6 +18,7 @@ export default function AllProducts({
   categoryid?: string;
   mb?: number;
   colnum?: number;
+  subcategoryid?: string;
 }) {
   const [page, setPage] = useState(1);
   const [products, setProducts] = useState<any[]>([]);
@@ -26,6 +29,7 @@ export default function AllProducts({
     page,
     search,
     categoryid,
+    subcategoryid,
   });
 
   useEffect(() => {
@@ -77,6 +81,7 @@ export default function AllProducts({
         {products.length === 0 ? (
           <View style={styles.loadingContainer}>
             <Text>No products found.</Text>
+            <NoFound />
           </View>
         ) : null}
       </View>

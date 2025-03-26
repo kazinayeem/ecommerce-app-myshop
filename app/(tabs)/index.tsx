@@ -1,9 +1,11 @@
 import AllProducts from "@/components/AllProducts";
 import CategoryShow from "@/components/CategoryShow";
+import DiscountAnimation from "@/components/DiscountAnimation";
 import ImageSlider from "@/components/ImageSlider";
 import SearchBar from "@/components/SearchBar";
 import React from "react";
 import { FlatList, StyleSheet, View } from "react-native";
+import { Divider } from "react-native-paper";
 
 export default function Index() {
   return (
@@ -15,7 +17,11 @@ export default function Index() {
         ListHeaderComponent={
           <>
             <ImageSlider />
+            <Divider />
             <CategoryShow />
+            <Divider />
+            <DiscountAnimation />
+            <Divider />
             <AllProducts mb={100} />
           </>
         }
