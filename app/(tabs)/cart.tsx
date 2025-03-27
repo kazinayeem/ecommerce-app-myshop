@@ -1,5 +1,6 @@
 import { removeItem, updateItemQuantity } from "@/redux/reducer/cartReducer";
 import { RootState } from "@/redux/store";
+import { router } from "expo-router";
 import React from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Button, IconButton } from "react-native-paper";
@@ -54,7 +55,8 @@ export default function Cart() {
           <Button
             mode="contained"
             style={styles.checkoutButton}
-            onPress={() => alert("Proceeding to Checkout")}
+            onPress={() => router.push("/checkout")}
+            disabled={items.length === 0}
           >
             Continue to Checkout
           </Button>

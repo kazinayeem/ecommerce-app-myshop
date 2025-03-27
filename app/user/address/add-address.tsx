@@ -23,16 +23,18 @@ import {
 export default function AddAddress() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [divisions, setDivisions] = useState<{ name: string; id: string }[]>(
+
+  const [divisions, setDivisions] = useState<{ id: string; name: string }[]>(
     []
   );
-  const [districts, setDistricts] = useState<{ name: string; id: string }[]>(
+  const [districts, setDistricts] = useState<{ id: string; name: string }[]>(
     []
   );
-  const [upazillas, setUpazillas] = useState<{ name: string; id: string }[]>(
+  const [upazillas, setUpazillas] = useState<{ id: string; name: string }[]>(
     []
   );
-  const [unions, setUnions] = useState<{ name: string; id: string }[]>([]);
+  const [unions, setUnions] = useState<{ id: string; name: string }[]>([]);
+
   const [formData, setFormData] = useState({
     addressLine1: "",
     addressLine2: "",
@@ -55,46 +57,58 @@ export default function AddAddress() {
 
   useEffect(() => {
     if (!formData.division) return;
-    fetch(`https://bdapi.vercel.app/api/v.1/district/${formData.division}`)
-      .then((res) => res.json())
-      .then((data) => setDistricts(data.data));
+    const selectedDivision = divisions.find(
+      (d) => d.name === formData.division
+    );
+    if (selectedDivision) {
+      fetch(`https://bdapi.vercel.app/api/v.1/district/${selectedDivision.id}`)
+        .then((res) => res.json())
+        .then((data) => setDistricts(data.data));
+    }
   }, [formData.division]);
 
   useEffect(() => {
     if (!formData.district) return;
-    fetch(`https://bdapi.vercel.app/api/v.1/upazilla/${formData.district}`)
-      .then((res) => res.json())
-      .then((data) => setUpazillas(data.data));
+    const selectedDistrict = districts.find(
+      (d) => d.name === formData.district
+    );
+    if (selectedDistrict) {
+      fetch(`https://bdapi.vercel.app/api/v.1/upazilla/${selectedDistrict.id}`)
+        .then((res) => res.json())
+        .then((data) => setUpazillas(data.data));
+    }
   }, [formData.district]);
 
   useEffect(() => {
     if (!formData.upazilla) return;
-    fetch(`https://bdapi.vercel.app/api/v.1/union/${formData.upazilla}`)
-      .then((res) => res.json())
-      .then((data) => setUnions(data.data));
+    const selectedUpazilla = upazillas.find(
+      (d) => d.name === formData.upazilla
+    );
+    if (selectedUpazilla) {
+      fetch(`https://bdapi.vercel.app/api/v.1/union/${selectedUpazilla.id}`)
+        .then((res) => res.json())
+        .then((data) => setUnions(data.data));
+    }
   }, [formData.upazilla]);
 
   const handleAddAddress = async () => {
     if (!formData.addressLine1 || !formData.zipCode) {
+      Alert.alert("Error", "Address Line 1 and Zip Code are required.");
       return;
     }
     try {
       setLoading(true);
-      await addAddress({ ...formData, userId: user?.id }).unwrap();
-      if (isError) {
-        Alert.alert(
-          "Error",
-          error && "data" in error
-            ? (error.data as { message: string }).message
-            : "An unknown error occurred",
-          [{ text: "OK" }]
-        );
-        return;
-      }
+      const addressData = { ...formData, userId: user?.id };
+
+      console.log("Submitted Address Data:", addressData);
+
+      await addAddress(addressData).unwrap();
+
       Alert.alert("Success", "Address added successfully", [
         { text: "OK", onPress: () => router.back() },
       ]);
     } catch {
+      Alert.alert("Error", "Failed to add address.");
     } finally {
       setLoading(false);
     }
@@ -121,7 +135,6 @@ export default function AddAddress() {
               setFormData({ ...formData, addressLine1: text })
             }
             style={styles.input}
-            theme={{ colors: { primary: "#6200ee" } }}
             mode="outlined"
           />
           <TextInput
@@ -131,12 +144,12 @@ export default function AddAddress() {
               setFormData({ ...formData, addressLine2: text })
             }
             style={styles.input}
-            theme={{ colors: { primary: "#6200ee" } }}
             mode="outlined"
           />
+
           <Dropdown
             style={styles.dropdown}
-            data={divisions.map((d) => ({ label: d.name, value: d.id }))}
+            data={divisions.map((d) => ({ label: d.name, value: d.name }))}
             labelField="label"
             valueField="value"
             value={formData.division}
@@ -144,13 +157,11 @@ export default function AddAddress() {
               setFormData({ ...formData, division: item.value })
             }
             placeholder="Select Division"
-            placeholderStyle={styles.placeholder}
-            selectedTextStyle={styles.selectedText}
-            itemTextStyle={styles.itemText}
           />
+
           <Dropdown
             style={styles.dropdown}
-            data={districts.map((d) => ({ label: d.name, value: d.id }))}
+            data={districts.map((d) => ({ label: d.name, value: d.name }))}
             labelField="label"
             valueField="value"
             value={formData.district}
@@ -158,13 +169,11 @@ export default function AddAddress() {
               setFormData({ ...formData, district: item.value })
             }
             placeholder="Select District"
-            placeholderStyle={styles.placeholder}
-            selectedTextStyle={styles.selectedText}
-            itemTextStyle={styles.itemText}
           />
+
           <Dropdown
             style={styles.dropdown}
-            data={upazillas.map((d) => ({ label: d.name, value: d.id }))}
+            data={upazillas.map((d) => ({ label: d.name, value: d.name }))}
             labelField="label"
             valueField="value"
             value={formData.upazilla}
@@ -172,29 +181,24 @@ export default function AddAddress() {
               setFormData({ ...formData, upazilla: item.value })
             }
             placeholder="Select Upazilla"
-            placeholderStyle={styles.placeholder}
-            selectedTextStyle={styles.selectedText}
-            itemTextStyle={styles.itemText}
           />
+
           <Dropdown
             style={styles.dropdown}
-            data={unions.map((d) => ({ label: d.name, value: d.id }))}
+            data={unions.map((d) => ({ label: d.name, value: d.name }))}
             labelField="label"
             valueField="value"
             value={formData.union}
             onChange={(item) => setFormData({ ...formData, union: item.value })}
             placeholder="Select Union"
-            placeholderStyle={styles.placeholder}
-            selectedTextStyle={styles.selectedText}
-            itemTextStyle={styles.itemText}
           />
+
           <TextInput
             label="Zip Code"
             value={formData.zipCode}
             keyboardType="numeric"
             onChangeText={(text) => setFormData({ ...formData, zipCode: text })}
             style={styles.input}
-            theme={{ colors: { primary: "#6200ee" } }}
             mode="outlined"
           />
           <TextInput
@@ -205,7 +209,6 @@ export default function AddAddress() {
               setFormData({ ...formData, phoneNumber: text })
             }
             style={styles.input}
-            theme={{ colors: { primary: "#6200ee" } }}
             mode="outlined"
           />
 
@@ -228,47 +231,16 @@ export default function AddAddress() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "white", // full-screen white background
-  },
-  header: {
-    marginBottom: 20,
-    alignItems: "center",
-  },
-  input: {
-    marginBottom: 12,
-    backgroundColor: "white", // smooth white background for inputs
-  },
+  container: { flex: 1, padding: 20, backgroundColor: "white" },
+  header: { marginBottom: 20, alignItems: "center" },
+  input: { marginBottom: 12, backgroundColor: "white" },
   dropdown: {
     marginBottom: 12,
     borderColor: "#6200ee",
     borderWidth: 1,
-    paddingVertical: 10, // Increased padding for better spacing
-    paddingHorizontal: 12,
+    padding: 10,
     borderRadius: 4,
     backgroundColor: "#fff",
   },
-  placeholder: {
-    fontSize: 14,
-    color: "#aaa",
-  },
-  selectedText: {
-    fontSize: 16,
-    color: "#000", // Black text color for dropdown
-  },
-  itemText: {
-    fontSize: 16,
-    color: "#333", // Black text color for dropdown items
-  },
-  dropDownStyle: {
-    backgroundColor: "#fff",
-    borderRadius: 4,
-    marginTop: 5,
-  },
-  button: {
-    marginTop: 20,
-    backgroundColor: "#6200ee",
-  },
+  button: { marginTop: 20, backgroundColor: "#6200ee" },
 });

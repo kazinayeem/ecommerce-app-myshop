@@ -40,3 +40,15 @@ export interface Subcategory {
   name: string;
   image: string;
 }
+
+export interface Address {
+  _id: string;
+  addressLine1: string;
+  addressLine2?: string;
+  division: string;
+  district: string;
+  upazilla: string;
+  zipCode: string;
+  phoneNumber: string;
+  country?: string;
+}
