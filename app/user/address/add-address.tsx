@@ -99,9 +99,6 @@ export default function AddAddress() {
     try {
       setLoading(true);
       const addressData = { ...formData, userId: user?.id };
-
-      console.log("Submitted Address Data:", addressData);
-
       await addAddress(addressData).unwrap();
 
       Alert.alert("Success", "Address added successfully", [

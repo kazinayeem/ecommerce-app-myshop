@@ -2,10 +2,17 @@ import { useGetAddressQuery } from "@/redux/api/addressApi";
 import { useAddordersMutation } from "@/redux/api/orderApi";
 import { useAppDispatch, useAppSelector } from "@/redux/hook/hooks";
 import { clearCart } from "@/redux/reducer/cartReducer";
+import { router } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { Button, Card, Dialog, Portal, RadioButton } from "react-native-paper";
-import Toast from "react-native-toast-message";
 
 interface Address {
   _id: string;
@@ -58,13 +65,20 @@ export default function PaymentPage() {
       };
       await addorders(orderData).unwrap();
       dispatch(clearCart());
-      Toast.show({ type: "success", text1: "Order placed successfully!" });
+      setIsDialogVisible(false);
+      Alert.alert("Order Placed", "Your order has been placed successfully.", [
+        {
+          text: "OK",
+          onPress: () => {
+            router.push("/user/order");
+          },
+        },
+      ]);
     } catch (error) {
-      Toast.show({ type: "error", text1: "Error placing order!" });
+      Alert.alert("Error", "Failed to place order. Please try again.");
     }
   };
 
-  // Loading and error states for addresses
   if (isLoadingAddresses) {
     return <Text style={styles.loadingText}>Loading addresses...</Text>;
   }
