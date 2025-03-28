@@ -1,32 +1,29 @@
+import BigButton from "@/components/Button";
+import { bordercolor, btncolor, graycolor } from "@/components/color/color";
 import { useLoginMutation } from "@/redux/api/userApi";
 import { useAppDispatch } from "@/redux/hook/hooks";
 import { loginSuccess } from "@/redux/reducer/authReducer";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Entypo from "@expo/vector-icons/Entypo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
 import {
-  Button,
-  Card,
-  IconButton,
-  Snackbar,
+  Alert,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
-} from "react-native-paper";
-
+  TouchableOpacity,
+  View,
+} from "react-native";
 export default function Login() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [login, { isLoading, isSuccess, isError }] = useLoginMutation();
+  const [login, { isLoading, isError, error }] = useLoginMutation();
   const [email, setEmail] = useState("test@gmail.com");
   const [password, setPassword] = useState("123456");
   const [showPassword, setShowPassword] = useState(false);
-  const [visible, setVisible] = React.useState(false);
-  const [SnackbarText, setSnackbarText] = useState("");
-
-  const onToggleSnackBar = () => setVisible(!visible);
-
-  const onDismissSnackBar = () => setVisible(false);
 
   const handleLogin = async () => {
     try {
@@ -35,122 +32,203 @@ export default function Login() {
         await AsyncStorage.setItem("user", JSON.stringify(response.user));
         await AsyncStorage.setItem("token", response.token);
         dispatch(loginSuccess(response.user));
-        setSnackbarText("Login successful!");
-        onToggleSnackBar();
-        router.back();
+        router.push("/");
       }
-    } catch (error) {
-      setSnackbarText(
-        (error as any)?.data?.message || "Login failed. Please try again."
+    } catch {
+      Alert.alert(
+        "Error",
+        "Login failed. Please check your credentials and try again."
       );
-      onToggleSnackBar();
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Snackbar
-        style={{ backgroundColor: isError ? "red" : "green" }}
-        visible={visible}
-        onDismiss={onDismissSnackBar}
-        action={{
-          label: "Undo",
-          onPress: () => {},
-        }}
-        theme={{ colors: { onSurface: "white" } }}
-      >
-        <Text>{SnackbarText}</Text>
-      </Snackbar>
-      <Card style={styles.card}>
-        <Card.Title title="Login" titleStyle={styles.title} />
-        <Card.Content>
+    <ScrollView style={styles.container}>
+      <View style={styles.textContainer}>
+        <Text style={styles.headerText}>Welcome </Text>
+        <Text style={styles.headerText}>Back! </Text>
+      </View>
+      {/* handel error */}
+      {isError && (
+        <Text style={{ color: "red", textAlign: "center" }}>
+          {"data" in error &&
+          error.data &&
+          typeof error.data === "object" &&
+          "message" in error.data
+            ? (error.data as { message: string }).message
+            : "An error occurred"}
+        </Text>
+      )}
+      <View>
+        <View style={styles.textInputContainer}>
+          <AntDesign name="user" size={24} color="#626262" />
           <TextInput
-            label="Email"
+            style={styles.textInput}
             value={email}
-            onChangeText={setEmail}
-            mode="outlined"
+            onChangeText={(text) => setEmail(text)}
+            placeholder="Username or Email"
+            placeholderTextColor={graycolor}
             keyboardType="email-address"
-            autoCapitalize="none"
-            style={styles.input}
           />
-          <View style={styles.passwordContainer}>
-            <TextInput
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
-              mode="outlined"
-              secureTextEntry={!showPassword}
-              style={styles.passwordInput}
-            />
-            <IconButton
-              icon={showPassword ? "eye-off" : "eye"}
-              size={20}
-              onPress={() => setShowPassword(!showPassword)}
-              style={styles.icon}
-            />
-          </View>
-          <Button mode="contained" onPress={handleLogin} style={styles.button}>
-            Login
-          </Button>
+        </View>
 
-          {/* Register Link */}
-          <TouchableOpacity onPress={() => router.push("/auth/register")}>
-            <Text style={styles.registerText}>
-              Don't have an account? Register
-            </Text>
-          </TouchableOpacity>
-        </Card.Content>
-      </Card>
-    </View>
+        <View style={styles.textInputContainer}>
+          <Entypo name="lock" size={24} color="#626262" />
+          <TextInput
+            placeholder="Password"
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            keyboardType="default"
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="done"
+            placeholderTextColor={graycolor}
+            secureTextEntry={!showPassword}
+            style={styles.textInput}
+          />
+          <AntDesign
+            name="eye"
+            size={20}
+            color="#626262"
+            onPress={() => setShowPassword(!showPassword)}
+          />
+        </View>
+      </View>
+      <TouchableOpacity onPress={() => router.push("/auth/login")}>
+        <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+      </TouchableOpacity>
+      <BigButton
+        textcolor={"white"}
+        title={"Login"}
+        w={90}
+        h={6}
+        fs={2.5}
+        mt={5}
+        mb={5}
+        action={handleLogin}
+        actiontitle={"Login"}
+        disabled={isLoading}
+        loading={isLoading}
+      />
+
+      <Text style={styles.orText}>- OR Continue with -</Text>
+
+      <View style={styles.socialContainer}>
+        <TouchableOpacity style={styles.socialButton}>
+          <AntDesign name="google" size={30} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.socialButton}>
+          <AntDesign name="apple1" size={30} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.socialButton}>
+          <AntDesign name="facebook-square" size={30} color="#3b5998" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Create Account */}
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>Create An Account</Text>
+        <TouchableOpacity>
+          <Text
+            style={styles.signUpText}
+            onPress={() => router.push("/auth/register")}
+          >
+            Sign Up
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    padding: 20,
-    backgroundColor: "#e3f2fd", // Soft blue background
+    paddingTop: 50,
+    backgroundColor: "#fff",
+    paddingHorizontal: 20,
   },
-  card: {
-    padding: 20,
-    borderRadius: 10,
-    backgroundColor: "#ffffff",
-    elevation: 5,
+  textContainer: {
+    marginBottom: 20,
   },
-  title: {
-    textAlign: "center",
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#1e88e5",
+  headerText: {
+    fontSize: 36,
+    fontWeight: "900",
   },
-  input: {
-    marginBottom: 15,
-    backgroundColor: "#f9f9f9", // Light input background
-  },
-  passwordContainer: {
+
+  textInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    position: "relative",
-  },
-  passwordInput: {
-    flex: 1,
+    borderWidth: 1,
+    borderColor: bordercolor,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 20,
     backgroundColor: "#f9f9f9",
+    height: 50,
   },
-  icon: {
-    position: "absolute",
-    right: 0,
-    top: 5,
-  },
-  button: {
-    marginTop: 10,
-    backgroundColor: "#1e88e5", // Strong blue for button
-  },
-  registerText: {
-    marginTop: 15,
+  textInput: {
+    flex: 1,
+    paddingHorizontal: 10,
     fontSize: 16,
-    color: "#1e88e5",
+    color: "#000",
+  },
+  forgotPasswordText: {
+    color: btncolor,
+    fontSize: 14,
+    alignSelf: "flex-end",
+    marginBottom: 20,
+  },
+  loginButton: {
+    backgroundColor: btncolor,
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  loginButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  orText: {
     textAlign: "center",
+    color: graycolor,
+    marginBottom: 20,
+  },
+  socialContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    marginBottom: 30,
+  },
+  socialButton: {
+    borderWidth: 1,
+    borderColor: bordercolor,
+    borderRadius: 50,
+    padding: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    width: 50,
+    height: 50,
+  },
+  socialIcon: {
+    width: 30,
+    height: 30,
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  footerText: {
+    color: graycolor,
+    fontSize: 14,
+  },
+  signUpText: {
     textDecorationLine: "underline",
+    textDecorationColor: btncolor,
+    color: btncolor,
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });

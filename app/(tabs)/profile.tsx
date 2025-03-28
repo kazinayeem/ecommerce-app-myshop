@@ -21,64 +21,61 @@ export default function Profile() {
   return (
     <View style={styles.container}>
       {isAuthenticated ? (
-        <Card style={styles.profileCard}>
-          <Card.Content style={styles.profileContent}>
-            <Avatar.Icon size={80} icon="account" style={styles.profileImage} />
-            <Text style={styles.name}>{user?.name || "Nayeem"}</Text>
-            <Text style={styles.email}>{user?.email}</Text>
+        <Card.Content style={styles.profileContent}>
+          <Avatar.Icon size={80} icon="account" style={styles.profileImage} />
 
-            <Divider style={styles.divider} />
+          <Text style={styles.email}>{user?.email}</Text>
 
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => router.push("/user")}
-            >
-              <Text style={styles.buttonText}>User Information</Text>
-            </TouchableOpacity>
+          <Divider style={styles.divider} />
 
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => router.push("/user/order")}
-            >
-              <Text style={styles.buttonText}>Orders</Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push("/user")}
+          >
+            <Text style={styles.buttonText}>User Information</Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => router.push("/user/address")}
-            >
-              <Text style={styles.buttonText}>Address</Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push("/user/order")}
+          >
+            <Text style={styles.buttonText}>Orders</Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.button, styles.logoutButton]}
-              onPress={logoutHandler}
-            >
-              <Text style={[styles.buttonText, { color: "#fff" }]}>Logout</Text>
-            </TouchableOpacity>
-          </Card.Content>
-        </Card>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push("/user/address")}
+          >
+            <Text style={styles.buttonText}>Address</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.logoutButton]}
+            onPress={logoutHandler}
+          >
+            <Text style={[styles.buttonText, { color: "#fff" }]}>Logout</Text>
+          </TouchableOpacity>
+        </Card.Content>
       ) : (
         // Guest View
-        <Card style={styles.profileCard}>
-          <Card.Content style={styles.profileContent}>
-            <Text style={styles.guestText}>You are not logged in</Text>
 
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => router.push("/auth/login")}
-            >
-              <Text style={styles.buttonText}>Login</Text>
-            </TouchableOpacity>
+        <Card.Content style={styles.profileContent}>
+          <Text style={styles.guestText}>You are not logged in</Text>
 
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => router.push("/auth/register")}
-            >
-              <Text style={styles.buttonText}>Register</Text>
-            </TouchableOpacity>
-          </Card.Content>
-        </Card>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push("/auth/login")}
+          >
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => router.push("/auth/register")}
+          >
+            <Text style={styles.buttonText}>Register</Text>
+          </TouchableOpacity>
+        </Card.Content>
       )}
     </View>
   );

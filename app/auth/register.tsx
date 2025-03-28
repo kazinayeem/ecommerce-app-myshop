@@ -1,123 +1,236 @@
+import BigButton from "@/components/Button";
+import { bordercolor, btncolor, graycolor } from "@/components/color/color";
+import { useRegisterMutation } from "@/redux/api/userApi";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Button, Card, IconButton, Text, TextInput } from "react-native-paper";
-
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 export default function Register() {
+  const [register, { isLoading }] = useRegisterMutation();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter(); // Assuming you have a router setup
-  const handleRegister = () => {
-    console.log("Username:", username);
-    console.log("Email:", email);
-    console.log("Password:", password);
-    // Add registration logic here
+  const router = useRouter();
+
+  const handleRegister = async () => {
+    try {
+      const respose = await register({
+        username,
+        email,
+        password,
+      }).unwrap();
+      if (respose) {
+        Alert.alert(
+          "Success",
+          "Registration successful! Please log in to continue."
+        );
+        router.push("/auth/login");
+      }
+    } catch {
+      Alert.alert("Error", "Registration failed. Please try again.");
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <Card style={styles.card}>
-        <Card.Title title="Register" titleStyle={styles.title} />
-        <Card.Content>
+    <ScrollView style={styles.container}>
+      <View style={styles.textContainer}>
+        <Text style={styles.headerText}>Create an </Text>
+        <Text style={styles.headerText}>Account </Text>
+      </View>
+      <View>
+        <View style={styles.textInputContainer}>
+          <AntDesign name="user" size={24} color="#626262" />
           <TextInput
-            label="Username"
+            style={styles.textInput}
+            placeholder="user name"
             value={username}
-            onChangeText={setUsername}
-            mode="outlined"
-            autoCapitalize="none"
-            style={styles.input}
+            onChangeText={(text) => setUsername(text)}
+            keyboardType="default"
+            placeholderTextColor={graycolor}
           />
+        </View>
+
+        <View style={styles.textInputContainer}>
+          <AntDesign name="user" size={24} color="#626262" />
           <TextInput
-            label="Email"
+            style={styles.textInput}
+            placeholder="Email"
             value={email}
-            onChangeText={setEmail}
-            mode="outlined"
+            onChangeText={(text) => setEmail(text)}
             keyboardType="email-address"
-            autoCapitalize="none"
-            style={styles.input}
+            placeholderTextColor={graycolor}
           />
-          <View style={styles.passwordContainer}>
-            <TextInput
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
-              mode="outlined"
-              secureTextEntry={!showPassword}
-              style={styles.passwordInput}
-            />
-            <IconButton
-              icon={showPassword ? "eye-off" : "eye"}
-              size={20}
-              onPress={() => setShowPassword(!showPassword)}
-              style={styles.icon}
-            />
-          </View>
-          <Button
-            mode="contained"
-            onPress={handleRegister}
-            style={styles.button}
-          >
-            Register
-          </Button>
-        </Card.Content>
-      </Card>
-      <TouchableOpacity onPress={() => router.push("/auth/login")}>
-        <Text style={styles.loginText}>Already have an account? Login</Text>
+        </View>
+
+        <View style={styles.textInputContainer}>
+          <AntDesign name="lock" size={24} color="#626262" />
+          <TextInput
+            placeholder="Password"
+            placeholderTextColor={graycolor}
+            secureTextEntry={showPassword}
+            style={styles.textInput}
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            keyboardType="default"
+          />
+          <AntDesign
+            name="eye"
+            size={26}
+            color="#626262"
+            onPress={() => setShowPassword(!showPassword)}
+          />
+        </View>
+
+        <View style={styles.textInputContainer}>
+          <AntDesign name="lock" size={24} color="#626262" />
+          <TextInput
+            placeholder="ConfirmPassword"
+            placeholderTextColor={graycolor}
+            secureTextEntry={showPassword}
+            value={confirmPassword}
+            onChangeText={(text) => setConfirmPassword(text)}
+            keyboardType="default"
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="done"
+            style={styles.textInput}
+          />
+          <AntDesign
+            name="eye"
+            size={26}
+            color="#626262"
+            onPress={() => setShowPassword(!showPassword)}
+          />
+        </View>
+      </View>
+      <TouchableOpacity>
+        <Text style={styles.RegisterText}>
+          By clicking the Register button, you agree to the public offer
+        </Text>
       </TouchableOpacity>
-    </View>
+      <BigButton
+        textcolor={"white"}
+        title={isLoading ? "Loading..." : "Register"}
+        w={90}
+        h={6}
+        fs={2.5}
+        mt={5}
+        mb={5}
+        action={handleRegister}
+        actiontitle={"Register"}
+      />
+
+      <Text style={styles.orText}>- OR Continue with -</Text>
+
+      <View style={styles.socialContainer}>
+        <TouchableOpacity style={styles.socialButton}>
+          <AntDesign name="google" size={30} color="#4285F4" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.socialButton}>
+          <AntDesign name="apple1" size={30} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.socialButton}>
+          <AntDesign name="facebook-square" size={30} color="#3b5998" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Create Account */}
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>Create An Account</Text>
+        <TouchableOpacity onPress={() => router.push("/auth/login")}>
+          <Text style={styles.signUpText}> Login</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: "#f0f4f8", // Smooth light background color
+    paddingTop: 0,
+    backgroundColor: "#fff",
+    paddingHorizontal: 20,
   },
-  card: {
-    width: "100%",
-    padding: 20,
-    borderRadius: 10,
-    backgroundColor: "#ffffff",
-    elevation: 5,
+  textContainer: {
+    marginBottom: 20,
   },
-  title: {
-    textAlign: "center",
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#1e88e5",
+  headerText: {
+    fontSize: 30,
+    fontWeight: "900",
   },
-  input: {
-    marginBottom: 15,
-    backgroundColor: "#f9f9f9", // Smooth light input background
-  },
-  passwordContainer: {
+
+  textInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    position: "relative",
+    borderWidth: 1,
+    borderColor: bordercolor,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    backgroundColor: "#f9f9f9",
+    height: 50,
   },
-  passwordInput: {
+  textInput: {
     flex: 1,
-    backgroundColor: "#f9f9f9", // Smooth light input background
-  },
-  icon: {
-    position: "absolute",
-    right: 0,
-    top: 5,
-  },
-  button: {
-    marginTop: 10,
-    backgroundColor: "#1e88e5", // Strong blue for button
-  },
-  loginText: {
-    marginTop: 15,
+    paddingHorizontal: 10,
     fontSize: 16,
-    color: "#1e88e5",
+    color: "#000",
+  },
+  RegisterText: {
+    color: btncolor,
+    fontSize: 14,
+    alignSelf: "flex-start",
+    marginBottom: 20,
+  },
+  orText: {
     textAlign: "center",
+    color: graycolor,
+    marginBottom: 20,
+  },
+  socialContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    marginBottom: 30,
+  },
+  socialButton: {
+    borderWidth: 1,
+    borderColor: bordercolor,
+    borderRadius: 50,
+    padding: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    width: 50,
+    height: 50,
+  },
+  socialIcon: {
+    width: 30,
+    height: 30,
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  footerText: {
+    color: graycolor,
+    fontSize: 14,
+  },
+  signUpText: {
     textDecorationLine: "underline",
+    textDecorationColor: btncolor,
+    color: btncolor,
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });

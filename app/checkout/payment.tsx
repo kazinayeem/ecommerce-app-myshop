@@ -2,7 +2,7 @@ import { useGetAddressQuery } from "@/redux/api/addressApi";
 import { useAddordersMutation } from "@/redux/api/orderApi";
 import { useAppDispatch, useAppSelector } from "@/redux/hook/hooks";
 import { clearCart } from "@/redux/reducer/cartReducer";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -12,7 +12,14 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { Button, Card, Dialog, Portal, RadioButton } from "react-native-paper";
+import {
+  Button,
+  Card,
+  Dialog,
+  FAB,
+  Portal,
+  RadioButton,
+} from "react-native-paper";
 
 interface Address {
   _id: string;
@@ -74,7 +81,7 @@ export default function PaymentPage() {
           },
         },
       ]);
-    } catch (error) {
+    } catch {
       Alert.alert("Error", "Failed to place order. Please try again.");
     }
   };
@@ -107,7 +114,12 @@ export default function PaymentPage() {
             ))}
           </RadioButton.Group>
         ) : (
-          <Text>No address found. Please add one.</Text>
+          <>
+            <Text>No address found. Please add one.</Text>
+            <Link href="/user/address/add-address">
+              <FAB icon="plus" label="Add Address" />
+            </Link>
+          </>
         )}
       </Card>
 

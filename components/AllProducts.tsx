@@ -24,7 +24,7 @@ export default function AllProducts({
   const [products, setProducts] = useState<any[]>([]);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
-  const { data, isFetching, isLoading, isError, error } = useGetProductsQuery({
+  const { data, isFetching, isLoading, isError } = useGetProductsQuery({
     limit: PAGE_SIZE,
     page,
     search,
@@ -39,7 +39,7 @@ export default function AllProducts({
       );
     }
     setIsFetchingMore(false);
-  }, [data]);
+  }, [data, page]);
 
   const loadMore = useCallback(() => {
     if (

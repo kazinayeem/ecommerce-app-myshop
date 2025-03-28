@@ -9,20 +9,22 @@ export default function CheckAuthProvider({
   children: React.ReactNode;
 }) {
   const dispatch = useAppDispatch();
+
   React.useEffect(() => {
+    const bootstrapAsync = async () => {
+      try {
+        const user = await AsyncStorage.getItem("user");
+        if (user) {
+          dispatch(setUserandToken({ user: JSON.parse(user) }));
+        } else {
+          console.log("Token or user not found in AsyncStorage.");
+        }
+      } catch (e) {
+        console.error("Error restoring token or user:", e);
+      }
+    };
     bootstrapAsync();
   }, [dispatch]);
-  const bootstrapAsync = async () => {
-    try {
-      const user = await AsyncStorage.getItem("user");
-      if (user) {
-        dispatch(setUserandToken({ user: JSON.parse(user) }));
-      } else {
-        console.log("Token or user not found in AsyncStorage.");
-      }
-    } catch (e) {
-      console.error("Error restoring token or user:", e);
-    }
-  };
+
   return <React.Fragment>{children}</React.Fragment>;
 }

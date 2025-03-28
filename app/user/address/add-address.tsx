@@ -47,7 +47,7 @@ export default function AddAddress() {
   });
 
   const user = useAppSelector((state) => state.auth.user);
-  const [addAddress, { isError, isLoading, error }] = useAddAddressMutation();
+  const [addAddress] = useAddAddressMutation();
 
   useEffect(() => {
     fetch("https://bdapi.vercel.app/api/v.1/division")
@@ -65,7 +65,7 @@ export default function AddAddress() {
         .then((res) => res.json())
         .then((data) => setDistricts(data.data));
     }
-  }, [formData.division]);
+  }, [divisions, formData.division]);
 
   useEffect(() => {
     if (!formData.district) return;
@@ -77,7 +77,7 @@ export default function AddAddress() {
         .then((res) => res.json())
         .then((data) => setUpazillas(data.data));
     }
-  }, [formData.district]);
+  }, [districts, formData.district]);
 
   useEffect(() => {
     if (!formData.upazilla) return;
@@ -89,7 +89,7 @@ export default function AddAddress() {
         .then((res) => res.json())
         .then((data) => setUnions(data.data));
     }
-  }, [formData.upazilla]);
+  }, [formData.upazilla, upazillas]);
 
   const handleAddAddress = async () => {
     if (!formData.addressLine1 || !formData.zipCode) {

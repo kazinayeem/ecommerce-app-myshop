@@ -1,3 +1,4 @@
+import GradientButton from "@/components/GradientButton";
 import HtmlParseData from "@/components/HtmlParseData";
 import SearchBar from "@/components/SearchBar";
 import { useGetProductByIdQuery } from "@/redux/api/productApi";
@@ -14,7 +15,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { Button, RadioButton, SegmentedButtons } from "react-native-paper"; // Import RadioButton
+import { RadioButton, SegmentedButtons } from "react-native-paper"; // Import RadioButton
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, {
   ICarouselInstance,
@@ -122,7 +123,6 @@ export default function Product() {
   // Check if priceByVariant exists before mapping
   const priceByVariant = data.priceByVariant || [];
   const colorOptions = data.color || [];
-  const productImages = data.image || [];
 
   return (
     <View style={styles.container}>
@@ -235,30 +235,7 @@ export default function Product() {
             ? data.stock
             : "No Available"}
         </Text>
-        {/* Buttons */}
-        <View style={styles.buttonContainer}>
-          <Button
-            icon={"cart-outline"}
-            disabled={
-              selectedProduct._id ? selectedProduct.stock <= 0 : data.stock <= 0
-            }
-            mode="contained"
-            onPress={addToCart}
-          >
-            Add to Cart
-          </Button>
-          <Button
-            disabled={
-              selectedProduct._id ? selectedProduct.stock <= 0 : data.stock <= 0
-            }
-            icon={"credit-card-outline"}
-            mode="contained"
-            onPress={buynowHandeler}
-          >
-            Buy Now
-          </Button>
-        </View>
-        {/* Description - Render the Last Description */}
+
         {data.description && (
           <View style={styles.descriptionContainer}>
             <Text style={styles.descriptionTitle}>Description</Text>
@@ -266,6 +243,24 @@ export default function Product() {
           </View>
         )}
       </ScrollView>
+      <View style={styles.buttonContainer}>
+        <GradientButton
+          disabled={
+            selectedProduct._id ? selectedProduct.stock <= 0 : data.stock <= 0
+          }
+          title="Add to Cart"
+          onPress={addToCart}
+          colors={["#5b6db8", "#d41294", "#ed0089"]}
+        />
+        <GradientButton
+          title="Buy Now"
+          disabled={
+            selectedProduct._id ? selectedProduct.stock <= 0 : data.stock <= 0
+          }
+          onPress={buynowHandeler}
+          colors={["#4777bd", "#159dcd", "#00acd4"]}
+        />
+      </View>
     </View>
   );
 }
@@ -328,8 +323,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   buttonContainer: {
+    backgroundColor: "#f9fafc",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 10,
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 16,
+    marginTop: 10,
   },
 });
