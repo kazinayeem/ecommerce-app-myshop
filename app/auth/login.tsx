@@ -18,8 +18,8 @@ export default function Login() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [login, { isLoading, isSuccess, isError }] = useLoginMutation();
-  const [email, setEmail] = useState("user1@gmail.com");
-  const [password, setPassword] = useState("password123");
+  const [email, setEmail] = useState("test@gmail.com");
+  const [password, setPassword] = useState("123456");
   const [showPassword, setShowPassword] = useState(false);
   const [visible, setVisible] = React.useState(false);
   const [SnackbarText, setSnackbarText] = useState("");
@@ -37,7 +37,7 @@ export default function Login() {
         dispatch(loginSuccess(response.user));
         setSnackbarText("Login successful!");
         onToggleSnackBar();
-        router.replace("/");
+        router.back();
       }
     } catch (error) {
       setSnackbarText(
@@ -50,15 +50,16 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <Snackbar
+        style={{ backgroundColor: isError ? "red" : "green" }}
         visible={visible}
         onDismiss={onDismissSnackBar}
         action={{
           label: "Undo",
           onPress: () => {},
         }}
+        theme={{ colors: { onSurface: "white" } }}
       >
         <Text>{SnackbarText}</Text>
-        {isLoading && <Text>Loading...</Text>}
       </Snackbar>
       <Card style={styles.card}>
         <Card.Title title="Login" titleStyle={styles.title} />

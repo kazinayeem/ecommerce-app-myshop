@@ -3,6 +3,7 @@ import SearchBar from "@/components/SearchBar";
 import { useGetProductByIdQuery } from "@/redux/api/productApi";
 import { useAppDispatch } from "@/redux/hook/hooks";
 import { addItem } from "@/redux/reducer/cartReducer";
+import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router/build/hooks";
 import React, { useEffect, useState } from "react";
 import {
@@ -77,11 +78,29 @@ export default function Product() {
             : data.price,
         quantity: 1,
         image: data.image[0],
-        variantsName: selectedProduct.name || "",
-        size: selectedProduct.value,
+        variantsName: selectedProduct.value || "",
+        size: selectedProduct.value || "",
         color: selectedColor || "",
       })
     );
+  };
+  const buynowHandeler = () => {
+    dispatch(
+      addItem({
+        productId: data._id,
+        name: data.name,
+        price:
+          selectedProduct.name || selectedProduct._id
+            ? selectedProduct.price
+            : data.price,
+        quantity: 1,
+        image: data.image[0],
+        variantsName: selectedProduct.value || "",
+        size: selectedProduct.value || "",
+        color: selectedColor || "",
+      })
+    );
+    router.push("/checkout");
   };
 
   if (isLoading) {
@@ -234,7 +253,7 @@ export default function Product() {
             }
             icon={"credit-card-outline"}
             mode="contained"
-            onPress={() => alert("Proceeding to checkout")}
+            onPress={buynowHandeler}
           >
             Buy Now
           </Button>

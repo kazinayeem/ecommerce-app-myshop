@@ -1,6 +1,6 @@
 import { CartItem } from "@/redux/type";
 import React from "react";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { Card } from "react-native-paper";
 
 export default function CartTable({ cartItems }: { cartItems: CartItem[] }) {
@@ -25,15 +25,15 @@ export default function CartTable({ cartItems }: { cartItems: CartItem[] }) {
           renderItem={({ item }) => (
             <View style={styles.row}>
               <View style={styles.cellProduct}>
-                {item.image && (
+                {/* {item.image && (
                   <Image
                     source={{ uri: item.image }}
                     style={styles.productImage}
                   />
-                )}
+                )} */}
                 <Text style={styles.productName}>
-                  {item.name.length > 30
-                    ? `${item.name.slice(0, 30)}...`
+                  {item.name.length > 8
+                    ? `${item.name.slice(0, 8)}...`
                     : item.name}
                 </Text>
               </View>
@@ -41,10 +41,8 @@ export default function CartTable({ cartItems }: { cartItems: CartItem[] }) {
                 {"\u09F3"}
                 {item.price.toLocaleString()}
               </Text>
-              <Text style={styles.cell}>
-                {item.size || item.variant || "N/A"}
-              </Text>
-              <Text style={styles.cell}>{item.color || "NO"}</Text>
+              <Text style={styles.cell}>{item.size || ""}</Text>
+              <Text style={styles.cell}>{item.color || ""}</Text>
               <Text style={styles.cell}>{item.quantity}</Text>
               <Text style={styles.cell}>
                 {"\u09F3"}
