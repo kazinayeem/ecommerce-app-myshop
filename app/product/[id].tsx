@@ -1,5 +1,8 @@
+import { maincolor } from "@/components/color/color";
 import GradientButton from "@/components/GradientButton";
 import HtmlParseData from "@/components/HtmlParseData";
+import ProductColor from "@/components/ProductColor";
+import ProductPriceVariant from "@/components/ProductPriceVariant";
 import SearchBar from "@/components/SearchBar";
 import { useGetProductByIdQuery } from "@/redux/api/productApi";
 import { useAppDispatch } from "@/redux/hook/hooks";
@@ -15,7 +18,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { RadioButton, SegmentedButtons } from "react-native-paper"; // Import RadioButton
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, {
   ICarouselInstance,
@@ -161,13 +163,16 @@ export default function Product() {
           />
         </View>
 
-        {/* Product Title */}
         <Text style={styles.productTitle}>{data.name}</Text>
+        <ProductPriceVariant
+          priceByVariant={priceByVariant}
+          selectedProduct={selectedProduct}
+          setSelectedProduct={setSelectedProduct}
+        />
 
-        {/* Variant Selection */}
-        {priceByVariant.length > 0 && (
+        {/* {priceByVariant.length > 0 && (
           <View style={styles.variantContainer}>
-            {/* <Text style={styles.variantText}>Select Size/Variant</Text> */}
+           
             <SegmentedButtons
               theme={{ fonts: { labelLarge: { fontSize: 10 } } }}
               value={selectedProduct._id}
@@ -196,25 +201,13 @@ export default function Product() {
               }))}
             />
           </View>
-        )}
+        )} */}
 
-        {/* Color Selection using RadioButton */}
-        {colorOptions.length > 0 && (
-          <View style={styles.colorContainer}>
-            <Text style={styles.colorText}>Select Color</Text>
-            <RadioButton.Group
-              onValueChange={(newColor) => setSelectedColor(newColor)}
-              value={selectedColor}
-            >
-              {colorOptions.map((color: string, index: number) => (
-                <View key={index} style={styles.colorOption}>
-                  <RadioButton value={color} color={color} />
-                  <Text>{color}</Text>
-                </View>
-              ))}
-            </RadioButton.Group>
-          </View>
-        )}
+        <ProductColor
+          colorOptions={colorOptions}
+          selectedColor={selectedColor}
+          setSelectedColor={setSelectedColor}
+        />
 
         {/* Product Price and Stock */}
         <Text style={styles.priceText}>
@@ -314,6 +307,7 @@ const styles = StyleSheet.create({
   priceText: {
     fontSize: 20,
     marginVertical: 8,
+    color: maincolor,
   },
   descriptionContainer: {
     marginVertical: 16,
