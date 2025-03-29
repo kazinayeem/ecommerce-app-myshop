@@ -53,6 +53,9 @@ export default function RootLayout() {
         name="cart"
         options={{
           title: "Cart",
+          headerShown: true,
+          headerTitle: "My Cart",
+          headerTitleAlign: "center",
           tabBarBadge: cartItem,
           tabBarIcon: ({ color }) => (
             <MaterialIcons name="shopping-cart" size={24} color={color} />
@@ -61,12 +64,28 @@ export default function RootLayout() {
       />
       <Tabs.Screen
         name="profile"
-        options={{
+        options={({ navigation }) => ({
+          headerShown: true,
+          headerTitle: "Profile",
+          headerTitleAlign: "center",
+          headerTintColor: "#000",
+
+          headerLeft: () => (
+            <MaterialIcons
+              name="arrow-back-ios"
+              size={24}
+              color="#000"
+              style={{ marginLeft: 30 }}
+              onPress={() => {
+                navigation.navigate("index");
+              }}
+            />
+          ),
           title: "Profile",
           tabBarIcon: ({ color }) => (
             <MaterialIcons name="person" size={24} color={color} />
           ),
-        }}
+        })}
       />
     </Tabs>
   );

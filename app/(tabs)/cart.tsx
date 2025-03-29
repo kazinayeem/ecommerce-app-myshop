@@ -16,9 +16,24 @@ export default function Cart() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.totalPrice}>Total Price: ৳{totalPrice}</Text>
-      <Text style={styles.cartTitle}>My Cart</Text>
       <ScrollView style={styles.cartList}>
+        {items.length === 0 && (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text style={{ fontSize: 18, color: "black" }}>
+              No items in cart
+            </Text>
+            <Button
+              mode="contained"
+              onPress={() => router.push("/")}
+              style={{ marginTop: 20 }}
+            >
+              Go to Products
+            </Button>
+          </View>
+        )}
+
         {items.map((item) => (
           <View key={item.productId} style={styles.cartItem}>
             <Image source={{ uri: item.image }} style={styles.productImage} />
@@ -51,6 +66,7 @@ export default function Cart() {
             </View>
           </View>
         ))}
+        <Text style={styles.totalPrice}>Total Price: ৳{totalPrice}</Text>
         <View style={styles.checkoutContainer}>
           <Button
             mode="contained"
@@ -71,7 +87,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: "#fff",
-    marginBottom: 100,
+    marginBottom: 50,
   },
   totalPrice: {
     fontSize: 18,

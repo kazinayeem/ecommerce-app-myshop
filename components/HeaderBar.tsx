@@ -10,6 +10,8 @@ const HeaderBar = () => {
   return (
     <Appbar.Header style={styles.header}>
       {/* Title */}
+      {/* back arrow  */}
+      <Appbar.BackAction color="#6c7386" onPress={() => router.back()} />
       <Appbar.Content title="Categories" titleStyle={styles.title} />
 
       {/* Search Icon */}

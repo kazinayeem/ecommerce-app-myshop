@@ -69,7 +69,7 @@ export default function Index() {
     <View style={styles.container}>
       {isSuccess && (
         <>
-          <View style={styles.card}>
+          <View>
             <Text style={styles.title}>User Profile</Text>
 
             {/* Username */}
@@ -149,13 +149,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#fff",
   },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 20,
-    elevation: 4,
-    marginBottom: 20,
-  },
+
   title: {
     fontSize: 24,
     fontWeight: "bold",

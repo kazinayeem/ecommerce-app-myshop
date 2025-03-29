@@ -52,3 +52,12 @@ export interface Address {
   phoneNumber: string;
   country?: string;
 }
+
+export interface ProductType {
+  name: string;
+  value: string;
+  price: number;
+  stock: number;
+  image: string;
+  _id: string;
+}
