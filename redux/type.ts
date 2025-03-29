@@ -61,3 +61,25 @@ export interface ProductType {
   image: string;
   _id: string;
 }
+
+export interface Product {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  image: string;
+  rating: number;
+  numReviews: number;
+  category: string;
+  subcategory?: string[];
+  type?: ProductType[];
+  reviews?: Review[];
+}
+export interface Review {
+  _id: string;
+  name: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}

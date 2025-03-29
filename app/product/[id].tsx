@@ -1,6 +1,8 @@
+import CustomBottomSheet from "@/components/CustomBottomSheet";
 import GradientButton from "@/components/GradientButton";
 import HtmlParseData from "@/components/HtmlParseData";
 import ImageCarosel from "@/components/ImageCarosel";
+import ProductBasicInfo from "@/components/ProductBasicInfo";
 import ProductColor from "@/components/ProductColor";
 import ProductPrice from "@/components/ProductPrice";
 import ProductPriceVariant from "@/components/ProductPriceVariant";
@@ -9,9 +11,11 @@ import { useGetProductByIdQuery } from "@/redux/api/productApi";
 import { useAppDispatch } from "@/redux/hook/hooks";
 import { addItem } from "@/redux/reducer/cartReducer";
 import { ProductType } from "@/redux/type";
+import BottomSheet from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router/build/hooks";
-import React, { useEffect, useState } from "react";
+
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   RefreshControl,
   ScrollView,
@@ -19,9 +23,18 @@ import {
   Text,
   View,
 } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ActivityIndicator } from "react-native-paper";
-
 export default function Product() {
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  const [bottomSheetContent, setBottomSheetContent] =
+    useState<React.ReactNode>(null);
+  const openBottomSheet = (content: React.ReactNode) => {
+    setBottomSheetContent(content);
+    bottomSheetRef.current?.expand();
+  };
+
   const dispatch = useAppDispatch();
   const [selectedProduct, setSelectedProduct] = useState<ProductType>({
     name: "",
@@ -36,26 +49,16 @@ export default function Product() {
   const { data, isLoading, isError, refetch } = useGetProductByIdQuery(
     id as string
   );
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = useCallback(() => {
     setRefreshing(true);
-    refetch().then(() => {
-      setRefreshing(false);
-    });
+    refetch().then(() => setRefreshing(false));
   }, [refetch]);
 
   useEffect(() => {
     if (data && data.priceByVariant && data.priceByVariant.length > 0) {
-      const firstVariant = data.priceByVariant[0];
-      setSelectedProduct({
-        name: firstVariant.name,
-        value: firstVariant.value,
-        price: firstVariant.price,
-        stock: firstVariant.stock,
-        image: firstVariant.image,
-        _id: firstVariant._id,
-      });
+      setSelectedProduct(data.priceByVariant[0]);
     }
   }, [data]);
 
@@ -64,10 +67,7 @@ export default function Product() {
       addItem({
         productId: data._id,
         name: data.name,
-        price:
-          selectedProduct.name || selectedProduct._id
-            ? selectedProduct.price
-            : data.price,
+        price: selectedProduct._id ? selectedProduct.price : data.price,
         quantity: 1,
         image: data.image[0],
         variantsName: selectedProduct.value || "",
@@ -76,22 +76,9 @@ export default function Product() {
       })
     );
   };
-  const buynowHandeler = () => {
-    dispatch(
-      addItem({
-        productId: data._id,
-        name: data.name,
-        price:
-          selectedProduct.name || selectedProduct._id
-            ? selectedProduct.price
-            : data.price,
-        quantity: 1,
-        image: data.image[0],
-        variantsName: selectedProduct.value || "",
-        size: selectedProduct.value || "",
-        color: selectedColor || "",
-      })
-    );
+
+  const buynowHandler = () => {
+    addToCart();
     router.push("/checkout");
   };
 
@@ -112,13 +99,9 @@ export default function Product() {
     );
   }
 
-  const priceByVariant = data.priceByVariant || [];
-  const colorOptions = data.color || [];
-
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <SearchBar />
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         nestedScrollEnabled={true}
@@ -126,19 +109,18 @@ export default function Product() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {/* Product Images */}
         <View style={styles.imageContainer}>
           <ImageCarosel data={data} />
         </View>
 
         <Text style={styles.productTitle}>{data.name}</Text>
         <ProductPriceVariant
-          priceByVariant={priceByVariant}
+          priceByVariant={data.priceByVariant}
           selectedProduct={selectedProduct}
           setSelectedProduct={setSelectedProduct}
         />
         <ProductColor
-          colorOptions={colorOptions}
+          colorOptions={data.color}
           selectedColor={selectedColor}
           setSelectedColor={setSelectedColor}
         />
@@ -146,15 +128,15 @@ export default function Product() {
           _id={data._id}
           name={data.name}
           value={selectedProduct.value || ""}
-          price={
-            selectedProduct.name || selectedProduct._id
-              ? selectedProduct.price
-              : data.price
-          }
-          stock={selectedProduct._id ? selectedProduct.stock : data.stock}
-          selectedProduct={selectedProduct}
+          price={selectedProduct.price || data.price}
+          stock={selectedProduct.stock || data.stock}
         />
-        {/* Description */}
+        <ProductBasicInfo
+          warranty={data.warranty}
+          returnableDays={data.returnableDays}
+          openBottomSheet={openBottomSheet}
+        />
+
         {data.description && (
           <View style={styles.descriptionContainer}>
             <Text style={styles.descriptionTitle}>Description</Text>
@@ -162,6 +144,11 @@ export default function Product() {
           </View>
         )}
       </ScrollView>
+      <CustomBottomSheet
+        bottomSheetContent={bottomSheetContent}
+        bottomSheetRef={bottomSheetRef}
+      />
+
       <View style={styles.buttonContainer}>
         <GradientButton
           disabled={
@@ -172,15 +159,15 @@ export default function Product() {
           colors={["#5b6db8", "#d41294", "#ed0089"]}
         />
         <GradientButton
-          title="Buy Now"
           disabled={
             selectedProduct._id ? selectedProduct.stock <= 0 : data.stock <= 0
           }
-          onPress={buynowHandeler}
+          title="Buy Now"
+          onPress={buynowHandler}
           colors={["#4777bd", "#159dcd", "#00acd4"]}
         />
       </View>
-    </View>
+    </GestureHandlerRootView>
   );
 }
 
@@ -198,16 +185,11 @@ const styles = StyleSheet.create({
   imageContainer: {
     marginBottom: 16,
   },
-
   productTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
     marginBottom: 8,
   },
-  variantContainer: {
-    marginBottom: 16,
-  },
-
   descriptionContainer: {
     marginVertical: 16,
   },
@@ -224,6 +206,35 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 10,
+  },
+  sheetContent: {
+    padding: 20,
+    alignItems: "center",
+  },
+  sheetText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  deliveryContainer: {
+    backgroundColor: "#f5fafe",
+    padding: 2,
+    borderRadius: 4,
+    marginVertical: 0,
+    flexDirection: "column",
+  },
+  deliveryRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 5,
+  },
+  deliveryTitle: {
+    fontSize: 12,
+    color: "#3b818e",
+    fontWeight: "bold",
+  },
+  deliveryText: {
+    fontSize: 14,
+    color: "#3b818e",
   },
 });
