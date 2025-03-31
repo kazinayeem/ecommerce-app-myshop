@@ -3,7 +3,7 @@ import { useAppSelector } from "@/redux/hook/hooks";
 import { router } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { Button, Card } from "react-native-paper";
+import { Button, Card, Divider } from "react-native-paper";
 
 export default function CheckoutPage() {
   const {
@@ -18,14 +18,47 @@ export default function CheckoutPage() {
   return (
     <ScrollView style={styles.container}>
       <Card style={styles.card}>
+        <Text style={styles.header}>Review Your Order</Text>
+        <Divider style={styles.divider} />
+
         <CartTable cartItems={cartItems} />
 
-        <View style={styles.totalSection}>
-          <Text style={styles.totalLabel}>Total Price:</Text>
-          <Text style={styles.totalAmount}>
-            {"\u09F3"}
-            {finalPrice.toLocaleString()}
-          </Text>
+        <View style={styles.priceSummary}>
+          <View style={styles.priceRow}>
+            <Text style={styles.label}>Subtotal:</Text>
+            <Text style={styles.amount}>
+              {"\u09F3"}
+              {totalPrice.toLocaleString()}
+            </Text>
+          </View>
+
+          {discountPrice > 0 && (
+            <View style={styles.priceRow}>
+              <Text style={styles.label}>Discount:</Text>
+              <Text style={[styles.amount, styles.discount]}>
+                -{"\u09F3"}
+                {discountPrice.toLocaleString()}
+              </Text>
+            </View>
+          )}
+
+          <View style={styles.priceRow}>
+            <Text style={styles.label}>Shipping:</Text>
+            <Text style={styles.amount}>
+              {"\u09F3"}
+              {shippingPrice.toLocaleString()}
+            </Text>
+          </View>
+
+          <Divider style={styles.divider} />
+
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Total:</Text>
+            <Text style={styles.totalAmount}>
+              {"\u09F3"}
+              {finalPrice.toLocaleString()}
+            </Text>
+          </View>
         </View>
 
         <View style={styles.buttonSection}>
@@ -33,8 +66,10 @@ export default function CheckoutPage() {
             mode="contained"
             onPress={() => router.push("/checkout/payment")}
             disabled={cartItems.length === 0}
+            style={styles.checkoutButton}
+            labelStyle={styles.buttonLabel}
           >
-            Go to Payment
+            Proceed to Payment
           </Button>
         </View>
       </Card>
@@ -46,15 +81,47 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
-    padding: 0,
+    padding: 10,
   },
   card: {
-    backgroundColor: "#ffff",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    elevation: 3,
+    padding: 16,
+    marginBottom: 20,
   },
-  totalSection: {
+  header: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  divider: {
+    marginVertical: 10,
+  },
+  priceSummary: {
+    marginTop: 10,
+  },
+  priceRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 10,
+    paddingVertical: 5,
+  },
+  label: {
+    fontSize: 14,
+    color: "#555",
+  },
+  amount: {
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  discount: {
+    color: "#ff3b30",
+  },
+  totalRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 10,
   },
   totalLabel: {
     fontSize: 16,
@@ -63,11 +130,20 @@ const styles = StyleSheet.create({
   totalAmount: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#000",
+    color: "#e60023",
   },
   buttonSection: {
-    backgroundColor: "#fff",
-    padding: 16,
+    marginTop: 15,
     alignItems: "center",
+  },
+  checkoutButton: {
+    backgroundColor: "#ff6f00",
+    borderRadius: 8,
+    paddingVertical: 10,
+    width: "100%",
+  },
+  buttonLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
