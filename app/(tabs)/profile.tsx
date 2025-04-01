@@ -6,7 +6,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useRouter } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Avatar, Card, Divider } from "react-native-paper";
 export default function Profile() {
@@ -17,10 +17,6 @@ export default function Profile() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const user = useAppSelector((state) => state.auth.user);
 
-  useEffect(() => {
-    isAuthenticated === false && router.replace("/auth/login");
-  }, [isAuthenticated, router]);
-
   const logoutHandler = async () => {
     await AsyncStorage.removeItem("user");
     dispatch(logout());
@@ -30,7 +26,7 @@ export default function Profile() {
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       <View style={[styles.container, { marginTop: headerHeight }]}>
-        {isAuthenticated && (
+        {isAuthenticated ? (
           <Card.Content style={styles.profileContent}>
             <Avatar.Icon size={80} icon="account" style={styles.profileImage} />
 
@@ -77,6 +73,32 @@ export default function Profile() {
               </TouchableOpacity>
             </View>
           </Card.Content>
+        ) : (
+          <View style={styles.profileCard}>
+            <Text style={styles.guestText}>Guest User</Text>
+            <Divider style={styles.divider} />
+            <View style={styles.row}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => router.push("/auth/login")}
+              >
+                <View style={styles.iconWraper}>
+                  <Feather name="log-in" size={24} color="#5c8dff" />
+                </View>
+                <Text style={styles.buttonText}>Login</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => router.push("/auth/register")}
+              >
+                <View style={styles.iconWraper}>
+                  <FontAwesome5 name="user-plus" size={24} color="#1fbc1e" />
+                </View>
+                <Text style={styles.buttonText}>Register</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         )}
       </View>
     </View>
@@ -97,7 +119,7 @@ const styles = StyleSheet.create({
   profileCard: {
     backgroundColor: "#ffffff",
     borderRadius: 15,
-    elevation: 5,
+    elevation: 2,
     padding: 20,
     marginBottom: 20,
   },

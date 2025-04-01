@@ -115,13 +115,13 @@ export default function Login() {
 
       <View style={styles.socialContainer}>
         <TouchableOpacity style={styles.socialButton}>
-          <AntDesign name="google" size={30} color="#000" />
+          <AntDesign name="google" size={25} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.socialButton}>
-          <AntDesign name="apple1" size={30} color="#000" />
+          <AntDesign name="apple1" size={25} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.socialButton}>
-          <AntDesign name="facebook-square" size={30} color="#3b5998" />
+          <AntDesign name="facebook-square" size={25} color="#3b5998" />
         </TouchableOpacity>
       </View>
 
