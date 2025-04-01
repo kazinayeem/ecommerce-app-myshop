@@ -1,8 +1,15 @@
 import { useGetOrdersQuery } from "@/redux/api/orderApi";
 import { useAppSelector } from "@/redux/hook/hooks";
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import React from "react";
-import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 // interface Product {
 //   productId: {
 //     _id: string;
@@ -88,7 +95,10 @@ export default function Index() {
       data={orders}
       renderItem={({ item }) => {
         return (
-          <View
+          <TouchableOpacity
+            onPress={() => {
+              router.push(`/user/order/${item._id}`);
+            }}
             style={{
               backgroundColor: "white",
               flexDirection: "row",
@@ -164,10 +174,10 @@ export default function Index() {
 
               {/* Order Date Below */}
               <Text style={{ fontSize: 14, color: "#666", marginTop: 5 }}>
-                {new Date(item.createdAt).toLocaleDateString()}
+                {new Date(item.createdAt).toLocaleDateString("en-GB")}
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
         );
       }}
       keyExtractor={(order) => order._id}

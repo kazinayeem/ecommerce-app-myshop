@@ -96,12 +96,15 @@ export default function Index() {
         }
       />
       {/* Add Address Button */}
-      <FAB
-        style={styles.fabAdd}
-        icon="plus"
-        label="Add Address"
-        onPress={() => router.push("/user/address/add-address")}
-      />
+      {/* if already 5 adress hide */}
+      {data.length < 5 && (
+        <FAB
+          icon="plus"
+          style={styles.fabAdd}
+          onPress={() => router.push("/user/address/add-address")}
+        />
+      )}
+      {/* Add Address Button End */}
     </View>
   );
 }

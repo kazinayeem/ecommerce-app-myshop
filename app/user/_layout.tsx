@@ -11,6 +11,7 @@ export default function Layout() {
         name="address/add-address"
         options={{ title: "Add Address" }}
       />
+      <Stack.Screen name="/order/[id]" options={{ title: "Order Details" }} />
     </Stack>
   );
 }

@@ -12,5 +12,19 @@ export default function Layout() {
     }
   }, [checkauth, router]);
 
-  return <Stack />;
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: true,
+      }}
+    >
+      <Stack.Screen
+        name="index"
+        options={{
+          title: "Checkout Infromation",
+        }}
+      />
+      <Stack.Screen name="payment" />
+    </Stack>
+  );
 }

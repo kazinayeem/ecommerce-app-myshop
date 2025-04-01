@@ -1,113 +1,101 @@
 import { CartItem } from "@/redux/type";
 import React from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { Card } from "react-native-paper";
+
+const ProductItem = ({ item }: { item: CartItem }) => {
+  return (
+    <View key={item.productId} style={styles.container}>
+      <Image source={{ uri: item.image }} style={styles.image} />
+      <View style={styles.detailsContainer}>
+        <Text style={styles.name}>{item.name}</Text>
+        <View style={styles.priceQuantityContainer}>
+          <Text style={styles.price}>
+            {"\u09F3"} {item.price.toLocaleString()}
+          </Text>
+          <Text style={styles.multiply}> x </Text>
+          <Text style={styles.quantity}>{item.quantity}</Text>
+        </View>
+        {item.size && <Text style={styles.option}>Size: {item.size}</Text>}
+        {item.color && <Text style={styles.option}>Color: {item.color}</Text>}
+      </View>
+    </View>
+  );
+};
 
 export default function CartTable({ cartItems }: { cartItems: CartItem[] }) {
   return (
-    <Card style={styles.card}>
-      <Text style={styles.title}>Cart Items</Text>
-      <View style={styles.rowHeader}>
-        <Text style={styles.headerCell}>Product</Text>
-        <Text style={styles.headerCell}>Price</Text>
-        <Text style={styles.headerCell}>Size/Variant</Text>
-        <Text style={styles.headerCell}>Color</Text>
-        <Text style={styles.headerCell}>Quantity</Text>
-        <Text style={styles.headerCell}>Subtotal</Text>
-      </View>
-
-      {cartItems.length === 0 ? (
-        <Text style={styles.emptyCart}>Your cart is empty.</Text>
-      ) : (
-        <FlatList
-          data={cartItems}
-          keyExtractor={(item) => item.productId}
-          renderItem={({ item }) => (
-            <View style={styles.row}>
-              <View style={styles.cellProduct}>
-                {/* {item.image && (
-                  <Image
-                    source={{ uri: item.image }}
-                    style={styles.productImage}
-                  />
-                )} */}
-                <Text style={styles.productName}>
-                  {item.name.length > 8
-                    ? `${item.name.slice(0, 8)}...`
-                    : item.name}
-                </Text>
-              </View>
-              <Text style={styles.cell}>
-                {"\u09F3"}
-                {item.price.toLocaleString()}
-              </Text>
-              <Text style={styles.cell}>{item.size || ""}</Text>
-              <Text style={styles.cell}>{item.color || ""}</Text>
-              <Text style={styles.cell}>{item.quantity}</Text>
-              <Text style={styles.cell}>
-                {"\u09F3"}
-                {(item.price * item.quantity).toLocaleString()}
-              </Text>
-            </View>
-          )}
-        />
-      )}
-    </Card>
+    <View>
+      <Text style={styles.title}>Products</Text>
+      <Card.Content>
+        {cartItems.length === 0 ? (
+          <Text style={styles.emptyCart}>Your cart is empty</Text>
+        ) : (
+          <View>
+            {cartItems.map((item) => (
+              <ProductItem key={item.productId} item={item} />
+            ))}
+          </View>
+        )}
+      </Card.Content>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    padding: 2,
-    marginVertical: 10,
-    backgroundColor: "#fff",
-  },
   title: {
     fontSize: 15,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 10,
   },
-  rowHeader: {
-    flexDirection: "row",
-    backgroundColor: "#f0f0f0",
-    paddingVertical: 8,
-    marginBottom: 5,
-  },
-  headerCell: {
-    flex: 1,
-    fontSize: 10,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  row: {
-    flexDirection: "row",
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-    flexWrap: "wrap",
-  },
-  cell: {
-    flex: 1,
-    textAlign: "center",
-    fontSize: 10,
-    flexShrink: 1, // Prevent overflow
-  },
-  cellProduct: {
-    flex: 2,
+  container: {
     flexDirection: "row",
     alignItems: "center",
-    flexWrap: "wrap", // Allow product details to wrap
+    backgroundColor: "#fff",
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
   },
-  productImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 5,
-    marginRight: 5,
+  image: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+    marginRight: 10,
+    borderWidth: 0.5,
+    borderColor: "#ddd",
   },
-  productName: {
+  detailsContainer: {
+    flex: 1,
+  },
+  name: {
     fontSize: 12,
-    flexShrink: 1, // Ensure text wraps in case it's too long
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  priceQuantityContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  price: {
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  multiply: {
+    fontSize: 12,
+    marginHorizontal: 5,
+  },
+  quantity: {
+    fontSize: 12,
+  },
+  option: {
+    fontSize: 12,
+    color: "gray",
+    marginTop: 2,
   },
   emptyCart: {
     textAlign: "center",

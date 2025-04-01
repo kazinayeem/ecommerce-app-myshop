@@ -1,7 +1,7 @@
 import { useGetAddressQuery } from "@/redux/api/addressApi";
 import { useAddordersMutation } from "@/redux/api/orderApi";
 import { useAppDispatch, useAppSelector } from "@/redux/hook/hooks";
-import { clearCart } from "@/redux/reducer/cartReducer";
+import { clearCart, setShippingPrice } from "@/redux/reducer/cartReducer";
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import {
+  ActivityIndicator,
   Button,
   Card,
   Dialog,
@@ -48,13 +49,19 @@ export default function PaymentPage() {
     shippingPrice,
   } = useAppSelector((state) => state.cart);
   const user = useAppSelector((state) => state.auth.user);
-
+  const finalPrice = totalPrice - (discountPrice || 0) + (shippingPrice || 0);
   const {
     data: addresses,
     isLoading: isLoadingAddresses,
     isError: isErrorAddresses,
   } = useGetAddressQuery(user?.id);
   const [addorders, { isLoading: isAdding }] = useAddordersMutation();
+
+  const handleAddressSelection = (addressId: string) => {
+    setSelectedAddress(addressId);
+    const selected = addresses?.find((addr: Address) => addr._id === addressId);
+    dispatch(setShippingPrice(selected?.district === "Dhaka" ? 60 : 120));
+  };
 
   const submitOrder = async () => {
     try {
@@ -63,7 +70,7 @@ export default function PaymentPage() {
         products: cartItems,
         totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
         address: selectedAddress,
-        deliveryCharge: shippingPrice || 0,
+        deliveryCharge: shippingPrice,
         paidAmount: paymentMethod === "cash_on_delivery" ? 0 : totalPrice,
         paymentMethod,
         dueAmount: ["bkash", "nagad"].includes(paymentMethod) ? 0 : totalPrice,
@@ -72,6 +79,11 @@ export default function PaymentPage() {
       };
       await addorders(orderData).unwrap();
       dispatch(clearCart());
+      dispatch(setShippingPrice(0));
+      setSelectedAddress("");
+      setPaymentMethod("");
+      setTransactionId("");
+      setSenderNumber("");
       setIsDialogVisible(false);
       Alert.alert("Order Placed", "Your order has been placed successfully.", [
         {
@@ -96,17 +108,49 @@ export default function PaymentPage() {
 
   return (
     <ScrollView style={styles.container}>
+      {isAdding && (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator size="large" color="#6200ea" />
+          <Text style={styles.loadingText}>Placing order...</Text>
+        </View>
+      )}
+      <View style={styles.priceContainer}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.sectionTitle}>Total:</Text>
+          <Text style={styles.totalPrice}>
+            {"\u09F3"}
+            {totalPrice.toLocaleString()}
+          </Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.sectionTitle}>Shipping Charge:</Text>
+          <Text style={styles.shippingCharge}>
+            {"\u09F3"}
+            {shippingPrice.toLocaleString()}
+          </Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.sectionTitle}>Final Total:</Text>
+          <Text style={styles.finalTotal}>
+            {"\u09F3"}
+            {finalPrice.toLocaleString()}
+          </Text>
+        </View>
+      </View>
+
       <Card style={styles.card}>
         <Text style={styles.sectionTitle}>Select Address</Text>
         {addresses?.length > 0 ? (
           <RadioButton.Group
-            onValueChange={setSelectedAddress}
+            onValueChange={handleAddressSelection}
             value={selectedAddress}
           >
-            {addresses.map((address: Address) => (
+            {addresses?.map((address: Address) => (
               <RadioButton.Item
                 style={{ padding: 10 }}
-                labelStyle={{ color: "black" }}
+                labelStyle={{ color: "black", fontSize: 10 }}
                 key={address._id}
                 label={`${address.addressLine1}, ${address.district}, ${address.division}, ${address.upazilla}, ${address.zipCode}, ${address.phoneNumber}`}
                 value={address._id}
@@ -145,6 +189,7 @@ export default function PaymentPage() {
             labelStyle={{ color: "black" }}
           />
         </RadioButton.Group>
+
         {["bkash", "nagad"].includes(paymentMethod) && (
           <>
             <TextInput
@@ -164,7 +209,7 @@ export default function PaymentPage() {
         )}
       </Card>
 
-      <View style={{ padding: 16, alignItems: "center" }}>
+      <View style={{ marginBottom: 50 }}>
         <Button
           mode="contained"
           onPress={() => setIsDialogVisible(true)}
@@ -178,18 +223,44 @@ export default function PaymentPage() {
         </Button>
       </View>
 
-      <Portal>
+      <Portal theme={{ colors: { primary: "#fff" } }}>
         <Dialog
+          style={{ backgroundColor: "white" }}
           visible={isDialogVisible}
           onDismiss={() => setIsDialogVisible(false)}
         >
-          <Dialog.Title>Confirm Order</Dialog.Title>
-          <Dialog.Content>
+          <Dialog.Title
+            style={{
+              textAlign: "center",
+              fontSize: 18,
+              fontWeight: "bold",
+              color: "#333",
+            }}
+          >
+            Confirm Order
+          </Dialog.Title>
+          <Dialog.Content style={{ padding: 20, alignItems: "center" }}>
             <Text>Are you sure you want to place this order?</Text>
           </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setIsDialogVisible(false)}>Cancel</Button>
-            <Button onPress={submitOrder}>Confirm</Button>
+          <Dialog.Actions style={{ justifyContent: "space-around" }}>
+            <Button
+              style={{
+                backgroundColor: "#f44336",
+                borderRadius: 5,
+              }}
+              onPress={() => setIsDialogVisible(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "#4CAF50",
+                borderRadius: 5,
+              }}
+              onPress={submitOrder}
+            >
+              Confirm
+            </Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -204,38 +275,70 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
-    color: "black",
+    color: "#333",
   },
   card: {
-    padding: 16,
-    marginVertical: 10,
+    padding: 12,
+    marginVertical: 12,
     backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "black",
-  },
+
   input: {
     marginVertical: 8,
-    padding: 8,
+    padding: 10,
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    color: "black",
+    borderColor: "#ddd",
+    borderRadius: 6,
+    color: "#333",
   },
   loadingText: {
     textAlign: "center",
-    fontSize: 18,
-    color: "black",
+    fontSize: 16,
+    color: "#666",
   },
   errorText: {
     textAlign: "center",
-    fontSize: 18,
+    fontSize: 16,
     color: "red",
+  },
+
+  priceContainer: {
+    marginVertical: 20,
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 6,
+  },
+  totalPrice: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#007BFF",
+    marginBottom: 12,
+  },
+  shippingCharge: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#FF6347",
+    marginBottom: 12,
+  },
+  finalTotal: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#28A745", // Green for final total
+    marginBottom: 12,
   },
 });

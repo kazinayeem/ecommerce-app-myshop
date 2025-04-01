@@ -3,7 +3,7 @@ import { useAppSelector } from "@/redux/hook/hooks";
 import { router } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { Button, Card, Divider } from "react-native-paper";
+import { Button, Divider } from "react-native-paper";
 
 export default function CheckoutPage() {
   const {
@@ -17,10 +17,7 @@ export default function CheckoutPage() {
 
   return (
     <ScrollView style={styles.container}>
-      <Card style={styles.card}>
-        <Text style={styles.header}>Review Your Order</Text>
-        <Divider style={styles.divider} />
-
+      <View>
         <CartTable cartItems={cartItems} />
 
         <View style={styles.priceSummary}>
@@ -42,13 +39,13 @@ export default function CheckoutPage() {
             </View>
           )}
 
-          <View style={styles.priceRow}>
+          {/* <View style={styles.priceRow}>
             <Text style={styles.label}>Shipping:</Text>
             <Text style={styles.amount}>
               {"\u09F3"}
               {shippingPrice.toLocaleString()}
             </Text>
-          </View>
+          </View> */}
 
           <Divider style={styles.divider} />
 
@@ -72,7 +69,7 @@ export default function CheckoutPage() {
             Proceed to Payment
           </Button>
         </View>
-      </Card>
+      </View>
     </ScrollView>
   );
 }
@@ -83,13 +80,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
     padding: 10,
   },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    elevation: 3,
-    padding: 16,
-    marginBottom: 20,
-  },
+
   header: {
     fontSize: 18,
     fontWeight: "bold",
@@ -134,6 +125,7 @@ const styles = StyleSheet.create({
   },
   buttonSection: {
     marginTop: 15,
+    marginBottom: 40,
     alignItems: "center",
   },
   checkoutButton: {
