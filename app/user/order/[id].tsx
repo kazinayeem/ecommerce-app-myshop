@@ -17,9 +17,9 @@ interface ProductItem {
     name: string;
     image: string;
     price: number;
-    size?: string;
-    color?: string;
   };
+  variant: string;
+  color: string;
   quantity: number;
   price: number;
 }
@@ -159,15 +159,11 @@ export default function OrderDetailsPage() {
             />
             <View style={styles.productDetails}>
               <Text style={styles.productName}>{item.productId.name}</Text>
-              {item.productId.size && (
-                <Text style={styles.productText}>
-                  Size: {item.productId.size}
-                </Text>
+              {item.variant && (
+                <Text style={styles.productText}>Variant : {item.variant}</Text>
               )}
-              {item.productId.color && (
-                <Text style={styles.productText}>
-                  Color: {item.productId.color}
-                </Text>
+              {item.color && (
+                <Text style={styles.productText}>Color: {item.color}</Text>
               )}
               <Text style={styles.productText}>Quantity: {item.quantity}</Text>
               <Text style={styles.productText}>Price: ৳{item.price}</Text>
