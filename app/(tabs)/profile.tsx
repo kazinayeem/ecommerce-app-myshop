@@ -1,16 +1,25 @@
 import { useAppDispatch, useAppSelector } from "@/redux/hook/hooks";
 import { logout } from "@/redux/reducer/authReducer";
+import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import Feather from "@expo/vector-icons/Feather";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useHeaderHeight } from "@react-navigation/elements";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Avatar, Card, Divider } from "react-native-paper";
-
 export default function Profile() {
+  const headerHeight = useHeaderHeight();
+
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const user = useAppSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    isAuthenticated === false && router.replace("/auth/login");
+  }, [isAuthenticated, router]);
 
   const logoutHandler = async () => {
     await AsyncStorage.removeItem("user");
@@ -19,64 +28,57 @@ export default function Profile() {
   };
 
   return (
-    <View style={styles.container}>
-      {isAuthenticated ? (
-        <Card.Content style={styles.profileContent}>
-          <Avatar.Icon size={80} icon="account" style={styles.profileImage} />
+    <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
+      <View style={[styles.container, { marginTop: headerHeight }]}>
+        {isAuthenticated && (
+          <Card.Content style={styles.profileContent}>
+            <Avatar.Icon size={80} icon="account" style={styles.profileImage} />
 
-          <Text style={styles.email}>{user?.email}</Text>
+            <Text style={styles.email}>{user?.email}</Text>
 
-          <Divider style={styles.divider} />
+            <Divider style={styles.divider} />
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/user")}
-          >
-            <Text style={styles.buttonText}>User Information</Text>
-          </TouchableOpacity>
+            <View style={styles.row}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => router.push("/user")}
+              >
+                <View style={styles.iconWraper}>
+                  <Feather name="user" size={24} color="#5c8dff" />
+                </View>
+                <Text style={styles.buttonText}>Profile</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/user/order")}
-          >
-            <Text style={styles.buttonText}>Orders</Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => router.push("/user/order")}
+              >
+                <View style={styles.iconWraper}>
+                  <FontAwesome5 name="file-alt" size={24} color="#1fbc1e" />
+                </View>
+                <Text style={styles.buttonText}>Orders</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/user/address")}
-          >
-            <Text style={styles.buttonText}>Address</Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => router.push("/user/address")}
+              >
+                <View style={styles.iconWraper}>
+                  <FontAwesome name="address-book" size={24} color="#d26223" />
+                </View>
+                <Text style={styles.buttonText}>Address</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.button, styles.logoutButton]}
-            onPress={logoutHandler}
-          >
-            <Text style={[styles.buttonText, { color: "#fff" }]}>Logout</Text>
-          </TouchableOpacity>
-        </Card.Content>
-      ) : (
-        // Guest View
-
-        <Card.Content style={styles.profileContent}>
-          <Text style={styles.guestText}>You are not logged in</Text>
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/auth/login")}
-          >
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/auth/register")}
-          >
-            <Text style={styles.buttonText}>Register</Text>
-          </TouchableOpacity>
-        </Card.Content>
-      )}
+              <TouchableOpacity style={styles.button} onPress={logoutHandler}>
+                <View style={styles.iconWraper}>
+                  <MaterialIcons name="logout" size={24} color="#cda004" />
+                </View>
+                <Text style={styles.buttonText}>Logout</Text>
+              </TouchableOpacity>
+            </View>
+          </Card.Content>
+        )}
+      </View>
     </View>
   );
 }
@@ -84,11 +86,16 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f4f4",
+    backgroundColor: "#ffffff",
     padding: 20,
   },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
   profileCard: {
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
     borderRadius: 15,
     elevation: 5,
     padding: 20,
@@ -117,22 +124,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: "#4c7ef2", // Main button color
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-    marginTop: 10,
-    width: "100%",
     alignItems: "center",
   },
   buttonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#fff",
+    fontSize: 13,
+    color: "#787878",
   },
-  logoutButton: {
-    backgroundColor: "#e74c3c", // Red logout button color
-  },
+
   guestText: {
     fontSize: 18,
     fontWeight: "bold",
@@ -144,5 +142,12 @@ const styles = StyleSheet.create({
     width: "100%",
     borderColor: "#e0e0e0",
     borderWidth: 0.5,
+  },
+  iconWraper: {
+    backgroundColor: "#f2f3f5",
+    padding: 20,
+    borderRadius: 100,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

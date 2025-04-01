@@ -1,28 +1,20 @@
 import { useGetOrdersQuery } from "@/redux/api/orderApi";
 import { useAppSelector } from "@/redux/hook/hooks";
 import { useFocusEffect } from "expo-router";
-import React, { useState } from "react";
-import {
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { Card, Divider } from "react-native-paper";
-interface Product {
-  productId: {
-    _id: string;
-    name: string;
-    image: string;
-    price: number;
-  };
-  quantity: number;
-  price: number;
-  variant?: string;
-  color?: string;
-}
+import React from "react";
+import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
+// interface Product {
+//   productId: {
+//     _id: string;
+//     name: string;
+//     image: string;
+//     price: number;
+//   };
+//   quantity: number;
+//   price: number;
+//   variant?: string;
+//   color?: string;
+// }
 export default function Index() {
   const user = useAppSelector((state) => state.auth.user);
   const {
@@ -36,11 +28,46 @@ export default function Index() {
       refetch();
     }, [refetch])
   );
-  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+  const getStatusColor = (status: any) => {
+    switch (status.toLowerCase()) {
+      case "pending":
+        return "#fcbf49";
+      case "shipped":
+        return "#4d96ff";
+      case "delivered":
+        return "#1cec26";
+      case "cancelled":
+        return "#ef4e22";
+      case "returned":
+        return "#ff9f1c";
+      case "refunded":
+        return "#9b5de5";
+      case "failed":
+        return "#d00000";
+      case "completed":
+        return "#06d6a0";
+      case "processing":
+        return "#ffbe0b";
+      default:
+        return "#cccccc";
+    }
+  };
 
+  const getPaymentColor = (method: any) => {
+    switch (method) {
+      case "bkash":
+        return "#D71A27"; // Bkash (Red)
+      case "nagad":
+        return "#F7941D"; // Nagad (Orange)
+      case "cash_on_delivery":
+        return "#4CAF50"; // COD (Green)
+      default:
+        return "#333"; // Default (Gray)
+    }
+  };
   if (isLoading && !orders) {
     return (
-      <View style={styles.centeredContainer}>
+      <View>
         <Text>Loading...</Text>
       </View>
     );
@@ -48,92 +75,101 @@ export default function Index() {
 
   if (isError) {
     return (
-      <View style={styles.centeredContainer}>
-        <Text style={styles.errorText}>Error loading orders</Text>
+      <View>
+        <Text>Error loading orders</Text>
       </View>
     );
   }
 
   // Function to render each order
-  const renderOrderItem = ({
-    item: order,
-  }: {
-    item: {
-      _id: string;
-      status: string;
-      totalPrice: number;
-      paidAmount: number;
-      dueAmount: number | null;
-      products: Product[];
-    };
-  }) => {
-    const toggleOrderDetails = () => {
-      setExpandedOrder(expandedOrder === order._id ? null : order._id);
-    };
-
-    return (
-      <Card key={order._id} style={styles.card}>
-        <Card.Content>
-          <Text style={styles.orderDetailTitle}>Order ID: {order._id}</Text>
-          <Text style={styles.orderDetail}>Status: {order.status}</Text>
-          <Text style={styles.orderDetail}>
-            Total Price: {order.totalPrice}
-          </Text>
-          <Text style={styles.orderDetail}>
-            Paid Amount: {order.paidAmount}
-          </Text>
-          {order.dueAmount !== null && (
-            <Text style={styles.orderDetail}>
-              Due Amount: {order.dueAmount}
-            </Text>
-          )}
-
-          {/* See More / See Details Button */}
-          <TouchableOpacity onPress={toggleOrderDetails}>
-            <Text style={styles.seeMoreButton}>
-              {expandedOrder === order._id ? "See Less" : "See More"}
-            </Text>
-          </TouchableOpacity>
-
-          {expandedOrder === order._id && (
-            <>
-              <Divider style={styles.divider} />
-              <Text style={styles.productsTitle}>Products:</Text>
-              {order.products.map((product: Product, index: number) => (
-                <View key={index} style={styles.productDetails}>
-                  <Text style={styles.productDetail}>
-                    Product ID: {product.productId?._id || "N/A"}
-                  </Text>
-                  <Text style={styles.productDetail}>
-                    Quantity: {product.quantity}
-                  </Text>
-                  <Text style={styles.productDetail}>
-                    Price: {product.price}
-                  </Text>
-                  {product.variant && (
-                    <Text style={styles.productDetail}>
-                      Variant: {product.variant}
-                    </Text>
-                  )}
-                  {product.color && (
-                    <Text style={styles.productDetail}>
-                      Color: {product.color}
-                    </Text>
-                  )}
-                  <Divider style={styles.divider} />
-                </View>
-              ))}
-            </>
-          )}
-        </Card.Content>
-      </Card>
-    );
-  };
 
   return (
     <FlatList
       data={orders}
-      renderItem={renderOrderItem}
+      renderItem={({ item }) => {
+        return (
+          <View
+            style={{
+              backgroundColor: "white",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: 10,
+              marginVertical: 5,
+            }}
+          >
+            {/* Left Side: Order ID & Total Price */}
+            <View>
+              <Text style={{ fontSize: 15, fontWeight: "bold", color: "#333" }}>
+                MY{item._id.slice(0, 10)}...
+              </Text>
+              <Text style={{ fontSize: 15, color: "#666", marginTop: 5 }}>
+                Tk {item.totalPrice}
+              </Text>
+            </View>
+
+            {/* Right Side: Status, Payment, and Order Date */}
+            <View style={{ alignItems: "center" }}>
+              {/* Status & Payment Row */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    backgroundColor: getStatusColor(item.status),
+                    paddingVertical: 5,
+                    paddingHorizontal: 5,
+                    borderStartStartRadius: 5,
+                    borderBottomStartRadius: 5,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "semibold",
+                      color: "white",
+                      marginRight: 8,
+                    }}
+                  >
+                    {item.status}
+                  </Text>
+                </View>
+                {/* Order Status */}
+
+                <View
+                  style={{
+                    backgroundColor: getPaymentColor(item.paymentMethod),
+                    paddingVertical: 5,
+                    paddingHorizontal: 5,
+                    borderEndStartRadius: 5,
+                    borderBottomEndRadius: 5,
+                  }}
+                >
+                  <Text style={{ fontSize: 12, color: "white" }}>
+                    {item.paymentMethod === "cash_on_delivery"
+                      ? "COD"
+                      : item.paymentMethod === "bkash"
+                      ? "Bkash"
+                      : item.paymentMethod === "nagad"
+                      ? "Nagad"
+                      : "Other"}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Order Date Below */}
+              <Text style={{ fontSize: 14, color: "#666", marginTop: 5 }}>
+                {new Date(item.createdAt).toLocaleDateString()}
+              </Text>
+            </View>
+          </View>
+        );
+      }}
       keyExtractor={(order) => order._id}
       contentContainerStyle={styles.container}
       showsVerticalScrollIndicator={false}
@@ -146,58 +182,6 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 20,
-  },
-  card: {
-    marginBottom: 20,
-    padding: 15,
-    borderRadius: 8,
-    elevation: 5,
-    backgroundColor: "#fff",
-  },
-  orderDetailTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "black",
-    marginBottom: 10,
-  },
-  orderDetail: {
-    fontSize: 16,
-    color: "black",
-    marginBottom: 8,
-  },
-  productsTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "black",
-    marginTop: 15,
-    marginBottom: 10,
-  },
-  productDetails: {
-    marginBottom: 10,
-  },
-  productDetail: {
-    fontSize: 14,
-    color: "black",
-    marginBottom: 5,
-  },
-  seeMoreButton: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "blue",
-    marginTop: 10,
-  },
-  divider: {
-    marginVertical: 8,
-  },
-  centeredContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  errorText: {
-    fontSize: 16,
-    color: "red",
-    textAlign: "center",
+    paddingBottom: 10,
   },
 });

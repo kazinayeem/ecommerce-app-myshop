@@ -68,7 +68,7 @@ export default function RootLayout() {
           headerShown: true,
           headerTitle: "Profile",
           headerTitleAlign: "center",
-          headerTintColor: "#000",
+          headerTransparent: true,
 
           headerLeft: () => (
             <MaterialIcons
