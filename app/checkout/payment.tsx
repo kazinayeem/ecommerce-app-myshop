@@ -2,6 +2,7 @@ import { useGetAddressQuery } from "@/redux/api/addressApi";
 import { useAddordersMutation } from "@/redux/api/orderApi";
 import { useAppDispatch, useAppSelector } from "@/redux/hook/hooks";
 import { clearCart, setShippingPrice } from "@/redux/reducer/cartReducer";
+import { Address } from "@/redux/type";
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -21,18 +22,6 @@ import {
   Portal,
   RadioButton,
 } from "react-native-paper";
-
-interface Address {
-  _id: string;
-  addressLine1: string;
-  addressLine2?: string;
-  division: string;
-  district: string;
-  upazilla: string;
-  zipCode: string;
-  phoneNumber: string;
-  country?: string;
-}
 
 export default function PaymentPage() {
   const [isDialogVisible, setIsDialogVisible] = useState(false);

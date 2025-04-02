@@ -21,8 +21,8 @@ export default function Login() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [login, { isLoading, isError, error }] = useLoginMutation();
-  const [email, setEmail] = useState("test@gmail.com");
-  const [password, setPassword] = useState("123456");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {

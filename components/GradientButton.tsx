@@ -1,12 +1,7 @@
+import { GradientButtonProps } from "@/redux/type";
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
-interface GradientButtonProps {
-  title?: string;
-  onPress: () => void;
-  disabled?: boolean;
-  colors?: [string, string, ...string[]];
-}
 const GradientButton = ({
   title,
   onPress,

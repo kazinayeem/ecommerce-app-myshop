@@ -1,4 +1,5 @@
 import { useGetordersByIdQuery } from "@/redux/api/orderApi";
+import { ProductItem } from "@/redux/type";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -11,18 +12,6 @@ import {
 } from "react-native";
 import { Button, Card, Divider, Title } from "react-native-paper";
 
-interface ProductItem {
-  productId: {
-    _id: string;
-    name: string;
-    image: string;
-    price: number;
-  };
-  variant: string;
-  color: string;
-  quantity: number;
-  price: number;
-}
 export default function OrderDetailsPage() {
   const { id } = useLocalSearchParams();
 

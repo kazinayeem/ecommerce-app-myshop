@@ -1,3 +1,4 @@
+import { ProductBasicInfoProps } from "@/redux/type";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import React from "react";
@@ -6,12 +7,6 @@ import { Divider } from "react-native-paper";
 import GuaranteedDate from "./GuaranteedDate";
 import ReturnPolicy from "./ReturnPolicy";
 import WarrantyPolicy from "./WarrantyPolicy";
-
-interface ProductBasicInfoProps {
-  warranty: number;
-  returnableDays: number;
-  openBottomSheet: (content: React.ReactNode) => void;
-}
 
 export default function ProductBasicInfo({
   warranty,

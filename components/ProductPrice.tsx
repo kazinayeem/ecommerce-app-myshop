@@ -1,18 +1,7 @@
+import { ProductPriceProps } from "@/redux/type";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { maincolor } from "./color/color";
-
-interface ProductType {
-  name: string;
-  value: string;
-  price: number;
-  stock: number;
-  _id: string;
-}
-
-interface ProductPriceProps extends ProductType {
-  selectedProduct?: ProductType;
-}
 
 export default function ProductPrice({
   _id,

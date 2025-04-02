@@ -1,4 +1,5 @@
 import { useAppSelector } from "@/redux/hook/hooks";
+import { SearchBarProps } from "@/redux/type";
 import Entypo from "@expo/vector-icons/Entypo";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -8,11 +9,6 @@ import { Pressable, StyleSheet, TextInput, View } from "react-native";
 import { Badge } from "react-native-paper";
 import { maincolor } from "./color/color";
 
-interface SearchBarProps {
-  isBackButtonVisible?: boolean;
-  icon?: React.ReactNode;
-  iconPress?: () => void;
-}
 function SearchBar({
   isBackButtonVisible = true,
   icon,

@@ -1,12 +1,7 @@
+import { ProductColorProps } from "@/redux/type";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { RadioButton } from "react-native-paper";
-
-interface ProductColorProps {
-  colorOptions: string[];
-  setSelectedColor: (color: string) => void;
-  selectedColor: string;
-}
 
 export default function ProductColor({
   colorOptions,

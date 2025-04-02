@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import { BigButtonProps } from "@/redux/type";
 import {
   responsiveFontSize,
   responsiveHeight,
@@ -13,24 +14,6 @@ import {
 } from "react-native-responsive-dimensions";
 import { nextbtncolor } from "./color/color";
 
-interface BigButtonProps {
-  title: string;
-  textcolor?: string;
-  w?: number;
-  h?: number;
-  fs?: number;
-  mt?: number;
-  mb?: number;
-  position?: string;
-  br?: number;
-  icon?: boolean;
-  children?: React.ReactNode;
-  action?: (title: string) => void;
-  actiontitle?: string;
-  bg?: string;
-  disabled?: boolean;
-  loading?: boolean;
-}
 export default function BigButton({
   title,
   textcolor,

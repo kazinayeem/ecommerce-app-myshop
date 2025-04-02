@@ -58,7 +58,7 @@ export interface ProductType {
   value: string;
   price: number;
   stock: number;
-  image: string;
+  image?: string;
   _id: string;
 }
 
@@ -82,4 +82,71 @@ export interface Review {
   rating: number;
   comment: string;
   createdAt: string;
+}
+
+export interface BigButtonProps {
+  title: string;
+  textcolor?: string;
+  w?: number;
+  h?: number;
+  fs?: number;
+  mt?: number;
+  mb?: number;
+  position?: string;
+  br?: number;
+  icon?: boolean;
+  children?: React.ReactNode;
+  action?: (title: string) => void;
+  actiontitle?: string;
+  bg?: string;
+  disabled?: boolean;
+  loading?: boolean;
+}
+
+export interface GradientButtonProps {
+  title?: string;
+  onPress: () => void;
+  disabled?: boolean;
+  colors?: [string, string, ...string[]];
+}
+
+export interface ProductBasicInfoProps {
+  warranty: number;
+  returnableDays: number;
+  openBottomSheet: (content: React.ReactNode) => void;
+}
+
+export interface ProductColorProps {
+  colorOptions: string[];
+  setSelectedColor: (color: string) => void;
+  selectedColor: string;
+}
+
+export interface ProductPriceProps extends ProductType {
+  selectedProduct?: ProductType;
+}
+
+export interface ProductPriceVariantProps {
+  priceByVariant: any[];
+  setSelectedProduct: (product: any) => void;
+  selectedProduct: any;
+}
+
+export interface SearchBarProps {
+  isBackButtonVisible?: boolean;
+  icon?: React.ReactNode;
+  iconPress?: () => void;
+}
+
+export interface ProductItem {
+  productId: {
+    _id: string;
+    name: string;
+    image: string;
+    price: number;
+  };
+  variant: string;
+  color: string;
+  quantity: number;
+  price: number;
 }

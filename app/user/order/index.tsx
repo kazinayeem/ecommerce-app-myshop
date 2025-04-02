@@ -10,18 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-// interface Product {
-//   productId: {
-//     _id: string;
-//     name: string;
-//     image: string;
-//     price: number;
-//   };
-//   quantity: number;
-//   price: number;
-//   variant?: string;
-//   color?: string;
-// }
+
 export default function Index() {
   const user = useAppSelector((state) => state.auth.user);
   const {

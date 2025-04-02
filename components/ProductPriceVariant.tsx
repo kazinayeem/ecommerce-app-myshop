@@ -1,13 +1,9 @@
+import { ProductPriceVariantProps } from "@/redux/type";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { maincolor } from "./color/color";
 
-interface ProductPriceVariantProps {
-  priceByVariant: any[];
-  setSelectedProduct: (product: any) => void;
-  selectedProduct: any;
-}
 export default function ProductPriceVariant({
   priceByVariant,
   selectedProduct,
