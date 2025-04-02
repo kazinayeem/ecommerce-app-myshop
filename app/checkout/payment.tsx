@@ -142,7 +142,7 @@ export default function PaymentPage() {
                 labelStyle={{ color: "black", fontSize: 10 }}
                 key={address._id}
                 label={`${address.addressLine1}, ${address.district}, ${address.division}, ${address.upazilla}, ${address.zipCode}, ${address.phoneNumber}`}
-                value={address._id}
+                value={address._id as string}
               />
             ))}
           </RadioButton.Group>

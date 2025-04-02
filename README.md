@@ -1,50 +1,69 @@
-# Welcome to your Expo app 👋
+# E-Commerce Mobile App with Admin Panel
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+![App Banner](https://i.ibb.co.com/xKQJQbL0/Whats-App-Image-2025-04-01-at-17-01-11-17efb921.jpg) <!-- Replace with actual banner -->
 
-## Get started
+This is a cross-platform e-commerce mobile application built using React Native and Expo. The app is available for both Android and iOS and provides a seamless shopping experience for users. The app includes a comprehensive admin panel for managing products, orders, and users.
 
-1. Install dependencies
+## Features
 
-   ```bash
-   npm install
-   ```
+### Customer App
 
-2. Start the app
+- **User System**
 
-   ```bash
-    npx expo start
-   ```
+  - Login/Register with JWT authentication
+  - Profile management (edit/delete)
+  - Address management (max 5 addresses)
 
-In the output, you'll find options to open the app in a
+- **Shopping Experience**
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+  - Product browsing with variants (RAM/ROM/Size/Color)
+  - Category hierarchy (main + sub-categories)
+  - Stock-aware UI (disables buttons when stock=0)
+  - Product details with bottom sheets (warranty/specs)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **Order System**
 
-## Get a fresh project
+  - Cart functionality
+  - Token-protected checkout
+  - Order history with details
 
-When you're ready, run:
+- **Admin Panel**
+  - Full product management (CRUD)
+  - Order processing system
+  - User management
+  - Inventory control
+  - Sales analytics
+
+## Technical Stack
+
+### Core
+
+- **Framework**: React Native (Expo)
+- **Routing**: Expo File-Based Routing
+- **State**: Redux + RTK Query
+- **UI**: React Native + Custom Components + React Native Paper
+
+### Backend Integration
+
+- **API**: RESTful services with JWT auth
+- **Data Fetching**: RTK Query for optimized caching
+- **Admin Auth**: Protected routes with role checks
+
+## Installation
 
 ```bash
-npm run reset-project
+# 1. Clone repository
+git clone https://github.com/kazinayeem/ecommerce-app-myshop.git
+cd ecommerce-app-myshop
+
+# 2. Install dependencies
+yarn install or npm install
+
+# 3. Configure environment
+cp .env.example .env
+# Edit .env with your values
+
+# 4. Run the app
+expo start or npm start
+
 ```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.

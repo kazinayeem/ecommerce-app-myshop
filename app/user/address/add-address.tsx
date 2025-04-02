@@ -11,6 +11,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+
 import { Dropdown } from "react-native-element-dropdown";
 import {
   ActivityIndicator,
@@ -19,7 +20,16 @@ import {
   TextInput,
   Title,
 } from "react-native-paper";
-
+export interface AddressType {
+  addressLine1: string;
+  addressLine2?: string;
+  zipCode: string;
+  phoneNumber: string;
+  division: string;
+  district: string;
+  upazilla: string;
+  union: string;
+}
 export default function AddAddress() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -35,7 +45,7 @@ export default function AddAddress() {
   );
   const [unions, setUnions] = useState<{ id: string; name: string }[]>([]);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<AddressType>({
     addressLine1: "",
     addressLine2: "",
     zipCode: "",
