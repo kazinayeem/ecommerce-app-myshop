@@ -10,7 +10,12 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "apk": "eas build -p android --profile preview"
+    "apk": "eas build -p android --profile preview",
+    "android-clean": "cd android && gradlew.bat clean && cd ..",
+    "android-build": "cd android && gradlew.bat assembleRelease && cd ..",
+    "expo-build": "expo build:android --release-channel preview",
+    "eas-build": "eas build --profile preview",
+    "eas-submit": "eas submit --profile preview --url"
   },
   "jest": {
     "preset": "jest-expo"
