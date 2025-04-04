@@ -15,7 +15,7 @@ This is a cross-platform e-commerce mobile application built using React Native 
   - Address management (max 5 addresses)
 
 - **Shopping Experience**
-
+  - Check Internet connection when load first time 
   - Product browsing with variants (RAM/ROM/Size/Color)
   - Category hierarchy (main + sub-categories)
   - Stock-aware UI (disables buttons when stock=0)
