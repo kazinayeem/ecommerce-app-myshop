@@ -4,8 +4,6 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
-  KeyboardAvoidingView,
-  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -20,6 +18,7 @@ import {
   TextInput,
   Title,
 } from "react-native-paper";
+
 export interface AddressType {
   addressLine1: string;
   addressLine2?: string;
@@ -30,6 +29,7 @@ export interface AddressType {
   upazilla: string;
   union: string;
 }
+
 export default function AddAddress() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -123,10 +123,7 @@ export default function AddAddress() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
+      <ScrollView style={{ flex: 1 }}>
         <ScrollView style={{ flex: 1 }}>
           <View style={styles.header}>
             <Title style={{ color: "black" }}>Add New Address</Title>
@@ -143,6 +140,13 @@ export default function AddAddress() {
             }
             style={styles.input}
             mode="outlined"
+            theme={{
+              colors: {
+                primary: "black",
+                text: "black",
+                placeholder: "gray",
+              },
+            }}
           />
           <TextInput
             label="Address Line 2"
@@ -152,6 +156,13 @@ export default function AddAddress() {
             }
             style={styles.input}
             mode="outlined"
+            theme={{
+              colors: {
+                primary: "black",
+                text: "black",
+                placeholder: "gray",
+              },
+            }}
           />
 
           <Dropdown
@@ -207,6 +218,13 @@ export default function AddAddress() {
             onChangeText={(text) => setFormData({ ...formData, zipCode: text })}
             style={styles.input}
             mode="outlined"
+            theme={{
+              colors: {
+                primary: "black",
+                text: "black",
+                placeholder: "gray",
+              },
+            }}
           />
           <TextInput
             keyboardType="phone-pad"
@@ -217,6 +235,13 @@ export default function AddAddress() {
             }
             style={styles.input}
             mode="outlined"
+            theme={{
+              colors: {
+                primary: "black",
+                text: "black",
+                placeholder: "gray",
+              },
+            }}
           />
 
           <Button
@@ -224,6 +249,7 @@ export default function AddAddress() {
             onPress={handleAddAddress}
             disabled={loading}
             style={styles.button}
+            labelStyle={{ color: "white" }}
           >
             {loading ? (
               <ActivityIndicator animating={true} color="white" />
@@ -232,22 +258,36 @@ export default function AddAddress() {
             )}
           </Button>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "white" },
-  header: { marginBottom: 20, alignItems: "center" },
-  input: { marginBottom: 12, backgroundColor: "white" },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#ffffff",
+  },
+  header: {
+    marginBottom: 20,
+    alignItems: "center",
+  },
+  input: {
+    marginBottom: 12,
+    backgroundColor: "#ffffff",
+    color: "#000000",
+  },
   dropdown: {
     marginBottom: 12,
-    borderColor: "#6200ee",
+    borderColor: "#000000",
     borderWidth: 1,
     padding: 10,
     borderRadius: 4,
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
   },
-  button: { marginTop: 20, backgroundColor: "#6200ee" },
+  button: {
+    marginTop: 20,
+    backgroundColor: "#000000",
+  },
 });
