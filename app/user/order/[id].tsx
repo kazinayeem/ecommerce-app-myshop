@@ -3,6 +3,7 @@ import { ProductItem } from "@/redux/type";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   RefreshControl,
   ScrollView,
@@ -46,6 +47,7 @@ export default function OrderDetailsPage() {
     return (
       <View style={styles.centered}>
         <Text>Loading...</Text>
+        <ActivityIndicator animating={true} size="large" color="#6200ea" />
       </View>
     );
   }
@@ -104,7 +106,7 @@ export default function OrderDetailsPage() {
         <Title style={styles.sectionTitle}>Order Details</Title>
         <Text style={styles.orderText}>Order ID: {order._id}</Text>
         <Text style={styles.orderText}>
-          Status:{" "}
+          Status:
           <Text
             style={[styles.statusText, { color: getStatusColor(order.status) }]}
           >
@@ -165,11 +167,11 @@ export default function OrderDetailsPage() {
             Total: <Text style={styles.amount}>৳{order.totalPrice}</Text>
           </Text>
           <Text style={styles.totalText}>
-            Shipping Charge:{" "}
+            Shipping Charge:
             <Text style={styles.amount}>৳{order.deliveryCharge}</Text>
           </Text>
           <Text style={styles.totalText}>
-            Final Total:{" "}
+            Final Total:
             <Text style={styles.amount}>
               ৳{order.totalPrice + order.deliveryCharge}
             </Text>

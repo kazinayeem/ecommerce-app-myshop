@@ -11,30 +11,37 @@ import { ActivityIndicator, Card, FAB } from "react-native-paper";
 export default function Index() {
   const router = useRouter();
   const user = useAppSelector((state) => state.auth.user);
-  const id = user?.id as string;
+  const userId = user?.id as string;
+
   const [refreshing, setRefreshing] = React.useState(false);
-  const { data, isLoading, isError, error, refetch } = useGetAddressQuery(id);
+  const {
+    data = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetAddressQuery(userId);
   const [deleteAddress] = useDeleteAddressMutation();
+
   useFocusEffect(
     React.useCallback(() => {
       refetch();
     }, [refetch])
   );
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     refetch()
       .unwrap()
-      .then(() => setRefreshing(false))
-      .catch(() => setRefreshing(false));
+      .finally(() => setRefreshing(false));
   }, [refetch]);
 
-  const deleteAddressHandler = async (id: string) => {
+  const handleDeleteAddress = async (addressId: string) => {
     try {
-      await deleteAddress(id).unwrap();
-      await refetch();
-    } catch (error) {
-      console.log(error);
-      console.log("Error deleting address");
+      await deleteAddress(addressId).unwrap();
+      refetch();
+    } catch (err) {
+      console.log("Error deleting address:", err);
     }
   };
 
@@ -51,10 +58,9 @@ export default function Index() {
     return (
       <View style={styles.centeredContainer}>
         <Text style={styles.errorText}>
-          Error:
           {error && "data" in error
             ? (error.data as { message: string }).message
-            : "An unknown error occurred"}
+            : "An error occurred while fetching addresses."}
         </Text>
       </View>
     );
@@ -69,8 +75,8 @@ export default function Index() {
         renderItem={({ item }) => (
           <Card style={styles.card}>
             <Card.Content>
-              <Text style={styles.addressText}>{item.addressLine1}</Text>
-              {item.addressLine2 ? <Text>{item.addressLine2}</Text> : null}
+              <Text style={styles.addressTitle}>{item.addressLine1}</Text>
+              {item.addressLine2 && <Text>{item.addressLine2}</Text>}
               <Text>{item.country}</Text>
               <Text>{item.district}</Text>
               <Text>{item.division}</Text>
@@ -79,8 +85,9 @@ export default function Index() {
               <Text>{item.zipCode}</Text>
               <FAB
                 icon="delete"
-                style={styles.fab}
-                onPress={() => deleteAddressHandler(item._id)}
+                style={styles.fabDelete}
+                small
+                onPress={() => handleDeleteAddress(item._id)}
               />
             </Card.Content>
           </Card>
@@ -90,13 +97,12 @@ export default function Index() {
             <Text style={styles.emptyText}>No addresses found.</Text>
           </View>
         )}
-        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        showsVerticalScrollIndicator={false}
       />
-      {/* Add Address Button */}
-      {/* if already 5 adress hide */}
+
       {data.length < 5 && (
         <FAB
           icon="plus"
@@ -104,15 +110,13 @@ export default function Index() {
           onPress={() => router.push("/user/address/add-address")}
         />
       )}
-      {/* Add Address Button End */}
     </View>
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1, // Ensures that FlatList takes up full available height
+    flexGrow: 1,
     padding: 16,
     backgroundColor: "#f9f9f9",
   },
@@ -121,45 +125,46 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  headerText: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
   card: {
     backgroundColor: "#fff",
     marginBottom: 12,
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 12,
-    elevation: 4, // Adds shadow effect
+    elevation: 3,
+    position: "relative",
   },
-  addressText: {
+  addressTitle: {
     fontSize: 16,
     fontWeight: "bold",
+    marginBottom: 4,
   },
   emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    marginTop: 50,
   },
   emptyText: {
     fontSize: 16,
-    color: "#6c6c6c",
+    color: "#666",
   },
   errorText: {
     fontSize: 16,
     color: "red",
     textAlign: "center",
+    padding: 20,
   },
-  fab: {
+  fabDelete: {
     position: "absolute",
-    right: 20,
-    bottom: 20,
-    backgroundColor: "#6200ea",
+    right: 10,
+    top: 10,
+    backgroundColor: "#ff5252",
+    zIndex: 1,
   },
   fabAdd: {
     position: "absolute",
     right: 20,
-    bottom: 80, // Added bottom offset to avoid overlap with delete button
+    bottom: 30,
     backgroundColor: "#6200ea",
   },
 });

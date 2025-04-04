@@ -21,11 +21,11 @@ export default function GuaranteedDate() {
       </Text>
 
       <Text style={{ fontSize: 16, color: "#555", lineHeight: 22 }}>
-        Expected delivery within{" "}
+        Expected delivery within
         <Text style={{ fontWeight: "bold", color: "#333" }}>
           3-5 business days
         </Text>
-        . Guaranteed Buy today to{" "}
+        . Guaranteed Buy today to
         <Text style={{ fontWeight: "bold", color: "#333" }}>
           {deliveryDate}
         </Text>

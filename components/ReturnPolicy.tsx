@@ -26,7 +26,7 @@ export default function ReturnPolicy({ returnableDays }: ReturnPolicyProps) {
           color: "#3b818e",
         }}
       >
-        You can return this product within{" "}
+        You can return this product within
         <Text style={{ fontWeight: "bold" }}>{returnableDays || 7}</Text> days
         if it’s defective or not as described.
       </Text>

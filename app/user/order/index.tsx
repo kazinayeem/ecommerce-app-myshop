@@ -3,6 +3,7 @@ import { useAppSelector } from "@/redux/hook/hooks";
 import { router, useFocusEffect } from "expo-router";
 import React from "react";
 import {
+  ActivityIndicator,
   FlatList,
   RefreshControl,
   StyleSheet,
@@ -63,7 +64,8 @@ export default function Index() {
   };
   if (isLoading && !orders) {
     return (
-      <View>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator animating={true} size="large" color="#6200ea" />
         <Text>Loading...</Text>
       </View>
     );

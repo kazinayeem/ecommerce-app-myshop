@@ -83,7 +83,7 @@ export default function ProductPriceVariant({
                   marginBottom: 5,
                 }}
               >
-                {d.name}{" "}
+                {d.name}
               </Text>
 
               <Text

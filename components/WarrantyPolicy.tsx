@@ -19,9 +19,9 @@ export default function WarrantyPolicy({ warranty }: WarrantyPolicyProps) {
       </Text>
 
       <Text style={{ fontSize: 16, color: "#555", lineHeight: 22 }}>
-        This product comes with a{" "}
+        This product comes with a
         <Text style={{ fontWeight: "bold", color: "#333" }}>
-          {warranty || 12}{" "}
+          {warranty || 12}
         </Text>
         month warranty from the date of purchase, covering only manufacturing
         defects.
