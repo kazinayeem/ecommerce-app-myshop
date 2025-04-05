@@ -154,11 +154,7 @@ export default function Index() {
                   <Text style={{ fontSize: 12, color: "white" }}>
                     {item.paymentMethod === "cash_on_delivery"
                       ? "COD"
-                      : item.paymentMethod === "bkash"
-                      ? "Bkash"
-                      : item.paymentMethod === "nagad"
-                      ? "Nagad"
-                      : "Other"}
+                      : item.paymentMethod}
                   </Text>
                 </View>
               </View>
