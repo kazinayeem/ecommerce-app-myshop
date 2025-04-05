@@ -22,6 +22,9 @@ export default function Payment() {
     if (event.url.includes("/fail")) {
       router.replace("/fail");
     }
+    if (event.url.includes("/cancel")) {
+      router.replace("/cancel");
+    }
   };
 
   const handleLoadStart = () => {

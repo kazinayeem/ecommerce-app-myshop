@@ -28,7 +28,8 @@ export default function RootLayout() {
         <Stack.Screen name="user" options={{ headerShown: false }} />
         <Stack.Screen name="checkout" options={{ headerShown: false }} />
         <Stack.Screen name="success" options={{ headerShown: false }} />
-        <Stack.Screen name="fail" options={{ headerShown: true }} />
+        <Stack.Screen name="fail" options={{ headerShown: false }} />
+        <Stack.Screen name="cancel" options={{ headerShown: false }} />
       </Stack>
     </MainProvider>
   );
