@@ -5,14 +5,7 @@ import { clearCart, setShippingPrice } from "@/redux/reducer/cartReducer";
 import { Address } from "@/redux/type";
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import {
   ActivityIndicator,
   Button,
@@ -54,34 +47,68 @@ export default function PaymentPage() {
 
   const submitOrder = async () => {
     try {
-      const orderData = {
-        userId: user?.id,
-        products: cartItems,
-        totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
-        address: selectedAddress,
-        deliveryCharge: shippingPrice,
-        paidAmount: paymentMethod === "cash_on_delivery" ? 0 : totalPrice,
-        paymentMethod,
-        dueAmount: ["bkash", "nagad"].includes(paymentMethod) ? 0 : totalPrice,
-        transactionId,
-        number: senderNumber,
-      };
-      await addorders(orderData).unwrap();
-      dispatch(clearCart());
-      dispatch(setShippingPrice(0));
-      setSelectedAddress("");
-      setPaymentMethod("");
-      setTransactionId("");
-      setSenderNumber("");
-      setIsDialogVisible(false);
-      Alert.alert("Order Placed", "Your order has been placed successfully.", [
-        {
-          text: "OK",
-          onPress: () => {
-            router.push("/user/order");
-          },
-        },
-      ]);
+      if (paymentMethod === "cash_on_delivery") {
+        const orderData = {
+          userId: user?.id,
+          products: cartItems,
+          totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
+          address: selectedAddress,
+          deliveryCharge: shippingPrice,
+          paidAmount: paymentMethod === "cash_on_delivery" ? 0 : totalPrice,
+          paymentMethod,
+          dueAmount: ["bkash", "nagad"].includes(paymentMethod)
+            ? 0
+            : totalPrice,
+          transactionId,
+          number: senderNumber,
+        };
+        await addorders(orderData).unwrap();
+        dispatch(clearCart());
+        dispatch(setShippingPrice(0));
+        setSelectedAddress("");
+        setPaymentMethod("");
+        setTransactionId("");
+        setSenderNumber("");
+        setIsDialogVisible(false);
+        Alert.alert(
+          "Order Placed",
+          "Your order has been placed successfully.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                router.push("/user/order");
+              },
+            },
+          ]
+        );
+      } else if (paymentMethod === "online") {
+        const orderData = {
+          userId: user?.id,
+          products: cartItems,
+          totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
+          address: selectedAddress,
+          deliveryCharge: shippingPrice,
+          paidAmount: 0,
+          paymentMethod,
+          dueAmount: totalPrice,
+        };
+        const response = await addorders(orderData).unwrap();
+        if (response?.GatewayPageURL) {
+          const redirectUrl = response.GatewayPageURL;
+          router.push({
+            pathname: "/checkout/makepayment",
+            params: { redirectUrl },
+          });
+        }
+        dispatch(clearCart());
+        dispatch(setShippingPrice(0));
+        setSelectedAddress("");
+        setPaymentMethod("");
+        setTransactionId("");
+        setSenderNumber("");
+        setIsDialogVisible(false);
+      }
     } catch {
       Alert.alert("Error", "Failed to place order. Please try again.");
     }
@@ -163,50 +190,24 @@ export default function PaymentPage() {
           value={paymentMethod}
         >
           <RadioButton.Item
-            label="Bkash"
-            value="bkash"
+            label="online"
+            value="online"
             labelStyle={{ color: "black" }}
           />
-          <RadioButton.Item
-            label="Nagad"
-            value="nagad"
-            labelStyle={{ color: "black" }}
-          />
+
           <RadioButton.Item
             label="Cash on Delivery"
             value="cash_on_delivery"
             labelStyle={{ color: "black" }}
           />
         </RadioButton.Group>
-
-        {["bkash", "nagad"].includes(paymentMethod) && (
-          <>
-            <TextInput
-              value={senderNumber}
-              onChangeText={setSenderNumber}
-              keyboardType="numeric"
-              style={styles.input}
-              placeholder="Sender Number"
-            />
-            <TextInput
-              value={transactionId}
-              onChangeText={setTransactionId}
-              style={styles.input}
-              placeholder="Transaction ID"
-            />
-          </>
-        )}
       </Card>
 
       <View style={{ marginBottom: 50 }}>
         <Button
           mode="contained"
           onPress={() => setIsDialogVisible(true)}
-          disabled={
-            !selectedAddress ||
-            !paymentMethod ||
-            (paymentMethod !== "cash_on_delivery" && !transactionId)
-          }
+          disabled={!selectedAddress || !paymentMethod}
         >
           {isAdding ? "Placing Order..." : "Place Order"}
         </Button>

@@ -72,18 +72,19 @@ export default function AllProducts({
 
   return (
     <View style={[styles.container, { marginBottom: mb || 0 }]}>
-      {search && (
+      {search && search.trim() !== "" && (
         <Text style={{ fontSize: 18, fontWeight: "bold" }}>
           Search Results for "{search}"
         </Text>
       )}
+
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        {products.length === 0 ? (
+        {products.length === 0 && (
           <View style={styles.loadingContainer}>
             <Text>No products found.</Text>
             <NoFound />
           </View>
-        ) : null}
+        )}
       </View>
       <FlatList
         data={products}
@@ -105,10 +106,11 @@ export default function AllProducts({
               style={styles.image}
             />
             <Text style={styles.name}>
-              {item.name.length > 30
+              {item.name && item.name.length > 30
                 ? `${item.name.slice(0, 30)}...`
                 : item.name}
             </Text>
+
             <Text style={styles.price}>
               {"\u09F3"}
               {item?.priceByVariant?.[0]?.price

@@ -21,7 +21,6 @@ import Animated, {
 import AllProducts from "@/components/AllProducts";
 import CategoryShow from "@/components/CategoryShow";
 import { maincolor } from "@/components/color/color";
-import DiscountAnimation from "@/components/DiscountAnimation";
 import ImageSlider from "@/components/ImageSlider";
 import SearchBar from "@/components/SearchBar";
 
@@ -34,18 +33,16 @@ export default function Index() {
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
 
+  const checkConnection = async () => {
+    const networkState = await Network.getNetworkStateAsync();
+    if (!networkState.isConnected) {
+      setIsConnected(false);
+      Alert.alert("No Internet", "Please check your internet connection.");
+    } else {
+      setIsConnected(true);
+    }
+  };
   useEffect(() => {
-    // Check internet connection with expo-network
-    const checkConnection = async () => {
-      const networkState = await Network.getNetworkStateAsync();
-      if (!networkState.isConnected) {
-        setIsConnected(false);
-        Alert.alert("No Internet", "Please check your internet connection.");
-      } else {
-        setIsConnected(true);
-      }
-    };
-
     checkConnection();
 
     const timer = setTimeout(() => {
@@ -63,6 +60,7 @@ export default function Index() {
 
   const handleRefresh = () => {
     setRefreshing(true);
+    checkConnection();
     setTimeout(() => {
       setRefreshing(false);
     }, 1500);
@@ -103,7 +101,7 @@ export default function Index() {
             <CategoryShow />
             <Divider />
             <Divider />
-            <AllProducts mb={100} /> <DiscountAnimation />
+            <AllProducts mb={100} />
           </>
         }
         keyExtractor={(_, index) => index.toString()}

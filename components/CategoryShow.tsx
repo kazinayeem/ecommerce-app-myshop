@@ -62,7 +62,7 @@ export default function CategoryShow() {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
-        initialNumToRender={5} // Optimized rendering
+        initialNumToRender={5} 
         getItemLayout={(data, index) => ({
           length: 80,
           offset: 80 * index,

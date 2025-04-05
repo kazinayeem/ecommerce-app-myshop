@@ -25,6 +25,7 @@ export default function Layout() {
         }}
       />
       <Stack.Screen name="payment" />
+      <Stack.Screen name="makepayment" options={{ headerShown: false }} />
     </Stack>
   );
 }
