@@ -20,7 +20,7 @@ export default function ProductColor({
             <View style={styles.colorOptionsRow}>
               {colorOptions.map((color: string, index: number) => (
                 <View key={index} style={styles.colorOption}>
-                  <RadioButton value={color} color={color} />
+                  <RadioButton value={color} color={color.toLocaleLowerCase()} />
                   <Text>{color}</Text>
                 </View>
               ))}

@@ -18,7 +18,7 @@ export default function ProductPriceVariant({
             style={{
               alignItems: "center",
               marginRight: 10,
-              borderWidth: 1,
+              borderWidth: 0.6,
               borderColor: maincolor,
               borderRadius: 10,
               padding: 5,
@@ -61,9 +61,9 @@ export default function ProductPriceVariant({
             <Image
               source={{ uri: d.image }}
               style={{
-                width: 60,
-                height: 60,
-                borderRadius: 10,
+                width: 50,
+                height: 50,
+                borderRadius: 2,
               }}
             />
 
@@ -78,18 +78,20 @@ export default function ProductPriceVariant({
             >
               <Text
                 style={{
-                  fontSize: 10,
+                  fontSize: 8,
                   fontWeight: "bold",
                   marginBottom: 5,
+                  color: maincolor,
                 }}
               >
                 {d.name}
+                {" :"}
               </Text>
 
               <Text
                 style={{
-                  fontSize: 10,
-                  fontWeight: "bold",
+                  fontSize: 7,
+                  fontWeight: "400",
                   marginBottom: 5,
                   color: maincolor,
                 }}
