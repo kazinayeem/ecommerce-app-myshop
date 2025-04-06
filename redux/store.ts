@@ -22,7 +22,9 @@ export const store = configureStore({
     [addressApi.reducerPath]: addressApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware()
+    getDefaultMiddleware({
+      serializableCheck: false,
+    })
       .concat(brandsApi.middleware)
       .concat(categoryApi.middleware)
       .concat(userApi.middleware)

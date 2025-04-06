@@ -1,5 +1,4 @@
-import { useRouter } from "expo-router";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { WebView, WebViewNavigation } from "react-native-webview";
@@ -35,17 +34,16 @@ export default function Payment() {
     setLoading(false);
   };
 
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading... Please wait.</Text>
+      </View>
+    );
+  }
   return (
     <View style={{ flex: 1 }}>
-      {loading && (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <ActivityIndicator size="large" color="#0000ff" />
-          <Text>Loading... Please wait.</Text>
-        </View>
-      )}
-
       {redirectUrl ? (
         <WebView
           source={{ uri: redirectUrl as string }}

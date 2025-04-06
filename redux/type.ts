@@ -39,6 +39,7 @@ export interface Subcategory {
   _id: string;
   name: string;
   image: string;
+  subcategories?: Subcategory[];
 }
 
 export interface Address {
@@ -51,6 +52,7 @@ export interface Address {
   zipCode: string;
   phoneNumber: string;
   country?: string;
+  union?: string;
 }
 
 export interface ProductType {
@@ -149,4 +151,11 @@ export interface ProductItem {
   color: string;
   quantity: number;
   price: number;
+}
+export interface Order {
+  _id: string;
+  totalPrice: number;
+  status: string;
+  paymentMethod: "bkash" | "nagad" | "cash_on_delivery" | string;
+  createdAt: string;
 }
