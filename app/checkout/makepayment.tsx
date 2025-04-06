@@ -34,23 +34,22 @@ export default function Payment() {
     setLoading(false);
   };
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading... Please wait.</Text>
-      </View>
-    );
-  }
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text style={styles.loadingText}>Loading... Please wait.</Text>
+        </View>
+      )}
+
       {redirectUrl ? (
         <WebView
           source={{ uri: redirectUrl as string }}
           onNavigationStateChange={handleNavigationChange}
           onLoadStart={handleLoadStart}
           onLoadEnd={handleLoadEnd}
-          style={{ flex: 1 }}
+          style={styles.webview}
         />
       ) : (
         <Text style={styles.error}>Redirect URL missing</Text>
@@ -60,9 +59,30 @@ export default function Payment() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f4f4f4", // Light background color for better contrast
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#555", // Gray text to match the loading spinner
+  },
+  webview: {
+    flex: 1,
+    borderTopWidth: 1,
+    borderTopColor: "#ddd", // Adds a subtle separation from the loading state
+  },
   error: {
     textAlign: "center",
     marginTop: 20,
     color: "red",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
