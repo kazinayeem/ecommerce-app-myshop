@@ -14,7 +14,14 @@ export default function RootLayout() {
         hidden={false}
         translucent={false}
       />
-      <Stack>
+      <Stack
+        initialRouteName="(tabs)"
+        screenOptions={{
+          animation: "ios_from_left",
+          animationMatchesGesture: true,
+          animationDuration: 300,
+        }}
+      >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="search" options={{ headerShown: false }} />
         <Stack.Screen name="product/[id]" options={{ headerShown: false }} />
