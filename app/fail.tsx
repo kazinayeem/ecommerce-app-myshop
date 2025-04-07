@@ -1,14 +1,10 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import React, { useEffect } from "react";
+import React from "react";
 import { useRouter } from "expo-router";
 
 export default function Fail() {
   const router = useRouter();
-  useEffect(() => {
-    setInterval(() => {
-      router.replace("/(tabs)");
-    }, 5000);
-  }, [router]);
+  
   const handleGoHome = () => {
     router.push("/");
   };
