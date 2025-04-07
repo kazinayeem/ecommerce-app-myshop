@@ -53,7 +53,7 @@ export default function Index() {
         easing: Easing.out(Easing.exp),
       });
       setTimeout(() => setLoading(false), 500);
-    }, 2500);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [opacity, scale]);

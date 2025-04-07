@@ -1,11 +1,13 @@
 import BigButton from "@/components/Button";
 import { bordercolor, btncolor, graycolor } from "@/components/color/color";
+import GoogleLogin from "@/components/GoogleLogin";
 import { useLoginMutation } from "@/redux/api/userApi";
 import { useAppDispatch } from "@/redux/hook/hooks";
 import { loginSuccess } from "@/redux/reducer/authReducer";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -110,22 +112,8 @@ export default function Login() {
         disabled={isLoading}
         loading={isLoading}
       />
-
       <Text style={styles.orText}>- OR Continue with -</Text>
-
-      <View style={styles.socialContainer}>
-        <TouchableOpacity style={styles.socialButton}>
-          <AntDesign name="google" size={25} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.socialButton}>
-          <AntDesign name="apple1" size={25} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.socialButton}>
-          <AntDesign name="facebook-square" size={25} color="#3b5998" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Create Account */}
+      <GoogleLogin />
       <View style={styles.footer}>
         <Text style={styles.footerText}>Create An Account</Text>
         <TouchableOpacity>

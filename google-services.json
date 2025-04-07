@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "602612340251",
+    "project_id": "expo--singin",
+    "storage_bucket": "expo--singin.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:602612340251:android:82ffdbf48d5725b09ccabe",
+        "android_client_info": {
+          "package_name": "com.nayeem360.myshop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "602612340251-i6rl34lm2eq7ghccs2jh2jt0b8bje5fu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nayeem360.myshop",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "602612340251-sv5th0jru1q5klidslclcjeuco9jjnbt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAdurH93F-xi6afwVPU2HApgo2BbACL7w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "602612340251-sv5th0jru1q5klidslclcjeuco9jjnbt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,31 +4,68 @@ import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Avatar, Card, Divider } from "react-native-paper";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Card, Divider } from "react-native-paper";
 export default function Profile() {
   const headerHeight = useHeaderHeight();
-
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const user = useAppSelector((state) => state.auth.user);
-
+  const [loading, setLoading] = React.useState(false);
   const logoutHandler = async () => {
-    await AsyncStorage.removeItem("user");
-    dispatch(logout());
-    router.replace("/");
+    setLoading(true);
+    try {
+      setLoading(true);
+      const currentUser = GoogleSignin.getCurrentUser();
+      if (currentUser) {
+        await GoogleSignin.revokeAccess();
+      }
+
+      await AsyncStorage.removeItem("token");
+      await AsyncStorage.removeItem("user");
+      dispatch(logout());
+      setLoading(false);
+      router.replace("/");
+    } catch (error) {
+      setLoading(false);
+      console.error("Error clearing AsyncStorage:", error);
+    }
   };
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#ffffff",
+        }}
+      >
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       <View style={[styles.container, { marginTop: headerHeight }]}>
         {isAuthenticated ? (
           <Card.Content style={styles.profileContent}>
-            <Avatar.Icon size={80} icon="account" style={styles.profileImage} />
+            <Image
+              width={80}
+              height={80}
+              source={{
+                uri: user?.profilePic
+                  ? user?.profilePic
+                  : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+              }}
+              style={styles.profileImage}
+            />
 
             <Text style={styles.email}>{user?.email}</Text>
 

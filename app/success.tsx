@@ -1,9 +1,16 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect } from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 
 export default function SuccessScreen() {
   const { tran_id } = useLocalSearchParams();
   const router = useRouter();
+  useEffect(() => {
+    setInterval(() => {
+      router.replace("/(tabs)");
+    }, 5000);
+  }, [router]);
+
   const handleGoHome = () => {
     router.replace("/(tabs)");
   };

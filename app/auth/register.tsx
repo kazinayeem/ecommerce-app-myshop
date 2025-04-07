@@ -1,5 +1,6 @@
 import BigButton from "@/components/Button";
 import { bordercolor, btncolor, graycolor } from "@/components/color/color";
+import GoogleLogin from "@/components/GoogleLogin";
 import { useRegisterMutation } from "@/redux/api/userApi";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useRouter } from "expo-router";
@@ -132,17 +133,7 @@ export default function Register() {
 
       <Text style={styles.orText}>- OR Continue with -</Text>
 
-      <View style={styles.socialContainer}>
-        <TouchableOpacity style={styles.socialButton}>
-          <AntDesign name="google" size={30} color="#4285F4" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.socialButton}>
-          <AntDesign name="apple1" size={30} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.socialButton}>
-          <AntDesign name="facebook-square" size={30} color="#3b5998" />
-        </TouchableOpacity>
-      </View>
+      <GoogleLogin />
 
       {/* Create Account */}
       <View style={styles.footer}>

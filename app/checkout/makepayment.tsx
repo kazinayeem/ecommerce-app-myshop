@@ -61,7 +61,7 @@ export default function Payment() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f4f4", // Light background color for better contrast
+    backgroundColor: "#f4f4f4", 
   },
   loadingContainer: {
     flex: 1,
