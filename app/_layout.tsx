@@ -17,7 +17,7 @@ export default function RootLayout() {
       <Stack
         initialRouteName="(tabs)"
         screenOptions={{
-          animation: "ios_from_left",
+          animation: "slide_from_left",
           animationMatchesGesture: true,
           animationDuration: 300,
         }}
