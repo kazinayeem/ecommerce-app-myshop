@@ -1,19 +1,31 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import React from "react";
+import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import React, { useEffect } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Fail() {
   const router = useRouter();
-  
-  const handleGoHome = () => {
-    router.push("/");
-  };
 
+  const handleGoHome = React.useCallback(() => {
+    router.push("/");
+  }, [router]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleGoHome();
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [handleGoHome]);
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>❌ Payment Failed</Text>
+      <FontAwesome name="times-circle" size={100} color="#721c24" />
+      <Text style={styles.title}>Payment Failed</Text>
       <Text style={styles.message}>
         Sorry, something went wrong. Please try again later.
+      </Text>
+      <Text style={styles.autoCancelNote}>
+        Note: Your order will be automatically canceled after 30 minutes.
       </Text>
 
       <TouchableOpacity style={styles.button} onPress={handleGoHome}>
@@ -31,16 +43,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8d7da",
     padding: 20,
   },
+  autoCancelNote: {
+    fontSize: 14,
+    color: "#a94442",
+    textAlign: "center",
+    marginBottom: 30,
+    paddingHorizontal: 10,
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#721c24",
-    marginBottom: 20,
+    marginTop: 20,
+    marginBottom: 10,
   },
   message: {
     fontSize: 16,
     color: "#721c24",
-    marginBottom: 40,
+    marginBottom: 30,
     textAlign: "center",
   },
   button: {
@@ -48,9 +68,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
-    marginVertical: 10,
     width: "80%",
-    justifyContent: "center",
     alignItems: "center",
   },
   buttonText: {

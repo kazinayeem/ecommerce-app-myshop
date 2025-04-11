@@ -51,7 +51,7 @@ export default function GoogleLogin() {
           await AsyncStorage.setItem("user", JSON.stringify(respose.user));
           await AsyncStorage.setItem("token", respose.token);
           dispatch(loginSuccess(respose.user));
-          router.push("/");
+          router.back();
         } else {
           Alert.alert(
             "Error",

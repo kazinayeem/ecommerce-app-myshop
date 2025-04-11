@@ -1,5 +1,5 @@
 import { useAppDispatch } from "@/redux/hook/hooks";
-import { setUserandToken } from "@/redux/reducer/authReducer";
+import { logout, setUserandToken } from "@/redux/reducer/authReducer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
 
@@ -17,10 +17,11 @@ export default function CheckAuthProvider({
         if (user) {
           dispatch(setUserandToken({ user: JSON.parse(user) }));
         } else {
-          console.log("Token or user not found in AsyncStorage.");
+          dispatch(logout());
         }
       } catch (e) {
         console.error("Error restoring token or user:", e);
+        dispatch(logout());
       }
     };
     bootstrapAsync();

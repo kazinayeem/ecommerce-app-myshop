@@ -29,7 +29,7 @@ export default function ImageCarosel({ data }: Props) {
         width={width}
         loop={true}
         autoPlay={true}
-        autoPlayInterval={2000}
+        autoPlayInterval={4000}
         height={width / 2}
         data={data.image}
         onProgressChange={progress}

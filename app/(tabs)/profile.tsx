@@ -8,9 +8,24 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { ActivityIndicator, Card, Divider } from "react-native-paper";
 export default function Profile() {
+  React.useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        process.env.EXPO_WEB_CLIENT_ID ||
+        "602612340251-sv5th0jru1q5klidslclcjeuco9jjnbt.apps.googleusercontent.com",
+      offlineAccess: true,
+    });
+  }, []);
   const headerHeight = useHeaderHeight();
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -19,20 +34,32 @@ export default function Profile() {
   const [loading, setLoading] = React.useState(false);
   const logoutHandler = async () => {
     setLoading(true);
+
     try {
       setLoading(true);
       const currentUser = GoogleSignin.getCurrentUser();
       if (currentUser) {
         await GoogleSignin.revokeAccess();
+        if (await AsyncStorage.getItem("token")) {
+          await AsyncStorage.removeItem("token");
+        }
+        if (await AsyncStorage.getItem("user")) {
+          await AsyncStorage.removeItem("user");
+        }
+        dispatch(logout());
+        setLoading(false);
+        router.replace("/");
+        return;
+      } else {
+        await AsyncStorage.removeItem("token");
+        await AsyncStorage.removeItem("user");
+        dispatch(logout());
+        setLoading(false);
+        router.replace("/");
       }
-
-      await AsyncStorage.removeItem("token");
-      await AsyncStorage.removeItem("user");
-      dispatch(logout());
-      setLoading(false);
-      router.replace("/");
     } catch (error) {
       setLoading(false);
+      Alert.alert("Error", "Logout failed. Please try again.");
       console.error("Error clearing AsyncStorage:", error);
     }
   };

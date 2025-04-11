@@ -39,7 +39,11 @@ export default function Payment() {
       {loading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#0000ff" />
-          <Text style={styles.loadingText}>Loading... Please wait.</Text>
+          <Text style={styles.loadingText}>Loading...</Text>
+          <Text style={styles.loadingText}>
+            Please wait while we process your payment.
+          </Text>
+          <Text style={styles.loadingText}>This may take a few moments.</Text>
         </View>
       )}
 
@@ -61,12 +65,18 @@ export default function Payment() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f4f4", 
+    backgroundColor: "#f4f4f4",
   },
   loadingContainer: {
-    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#ffffffcc",
+    zIndex: 1,
   },
   loadingText: {
     marginTop: 10,
@@ -76,7 +86,7 @@ const styles = StyleSheet.create({
   webview: {
     flex: 1,
     borderTopWidth: 1,
-    borderTopColor: "#ddd", // Adds a subtle separation from the loading state
+    borderTopColor: "#ddd",
   },
   error: {
     textAlign: "center",

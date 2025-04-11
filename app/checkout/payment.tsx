@@ -77,7 +77,7 @@ export default function PaymentPage() {
             {
               text: "OK",
               onPress: () => {
-                router.push("/user/order");
+                router.replace("/user/order");
               },
             },
           ]
