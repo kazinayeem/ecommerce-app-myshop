@@ -15,7 +15,11 @@ export default function Layout() {
   return (
     <Stack
       screenOptions={{
+        animation: "slide_from_left",
+        animationMatchesGesture: true,
+        animationDuration: 300,
         headerShown: true,
+        headerTitleAlign: "center",
       }}
     >
       <Stack.Screen

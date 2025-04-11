@@ -93,6 +93,13 @@ export default function GoogleLogin() {
 
   return (
     <GoogleSigninButton
+      style={{
+        width: "100%",
+        height: 55,
+        alignItems: "center",
+        alignSelf: "center",
+        justifyContent: "center",
+      }}
       size={GoogleSigninButton.Size.Wide}
       color={GoogleSigninButton.Color.Dark}
       onPress={signIn}

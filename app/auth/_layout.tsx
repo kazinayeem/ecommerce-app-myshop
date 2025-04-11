@@ -7,7 +7,11 @@ export default function Layout() {
   return (
     <Stack
       screenOptions={{
-        presentation: "modal",
+        animation: "slide_from_left",
+        animationMatchesGesture: true,
+        animationDuration: 300,
+        headerShown: true,
+        headerTitleAlign: "center",
       }}
     >
       <Stack.Screen
@@ -28,7 +32,7 @@ export default function Layout() {
           ),
         })}
       />
-      <Stack.Screen name="register" />
+      <Stack.Screen name="register" options={{ title: "Register" }} />
     </Stack>
   );
 }

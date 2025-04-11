@@ -3,7 +3,13 @@ import React from "react";
 
 export default function Layout() {
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        animation: "slide_from_left",
+        animationMatchesGesture: true,
+        animationDuration: 300,
+      }}
+    >
       <Stack.Screen name="index" options={{ title: "User" }} />
       <Stack.Screen name="order/index" options={{ title: "Orders" }} />
       <Stack.Screen name="address/index" options={{ title: "Addresses" }} />
