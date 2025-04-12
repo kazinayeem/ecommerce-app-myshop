@@ -16,7 +16,11 @@ export default function CheckoutPage() {
   const finalPrice = totalPrice - (discountPrice || 0) + (shippingPrice || 0);
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
+    >
       <View>
         <CartTable cartItems={cartItems} />
 
@@ -38,14 +42,6 @@ export default function CheckoutPage() {
               </Text>
             </View>
           )}
-
-          {/* <View style={styles.priceRow}>
-            <Text style={styles.label}>Shipping:</Text>
-            <Text style={styles.amount}>
-              {"\u09F3"}
-              {shippingPrice.toLocaleString()}
-            </Text>
-          </View> */}
 
           <Divider style={styles.divider} />
 
@@ -77,65 +73,83 @@ export default function CheckoutPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 10,
+    backgroundColor: "#ffffff",
+    padding: 16,
   },
 
-  header: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  divider: {
-    marginVertical: 10,
-  },
   priceSummary: {
-    marginTop: 10,
+    marginTop: 20,
+    borderRadius: 12,
+    backgroundColor: "#fff",
+    elevation: 3, // subtle shadow for card effect
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
   },
+
   priceRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 5,
+    paddingVertical: 8,
   },
+
   label: {
     fontSize: 14,
     color: "#555",
+    fontWeight: "500",
   },
+
   amount: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: "600",
   },
+
   discount: {
     color: "#ff3b30",
   },
+
   totalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 10,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
   },
+
   totalLabel: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "700",
+    color: "#333",
   },
+
   totalAmount: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#e60023",
+    fontWeight: "700",
+    color: "#e60023", // Red for the total price to stand out
   },
+
+  divider: {
+    marginVertical: 16,
+    borderColor: "#ddd",
+  },
+
   buttonSection: {
-    marginTop: 15,
-    marginBottom: 40,
+    marginTop: 20,
     alignItems: "center",
   },
+
   checkoutButton: {
-    backgroundColor: "#ff6f00",
+    backgroundColor: "#5cb85c", // Soft green for positive action
     borderRadius: 8,
-    paddingVertical: 10,
     width: "100%",
+    paddingVertical: 12,
   },
+
   buttonLabel: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "600",
+    color: "#fff", // White text for contrast
   },
 });

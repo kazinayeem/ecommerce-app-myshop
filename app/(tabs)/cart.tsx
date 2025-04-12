@@ -20,16 +20,20 @@ export default function Cart() {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.cartList}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        style={styles.cartList}
+      >
         {items.length === 0 ? (
           <View style={styles.emptyCart}>
-            <Text style={styles.emptyCartText}>No items in cart</Text>
+            <Text style={styles.emptyCartText}>Your cart is empty</Text>
             <Button
               mode="contained"
               onPress={() => router.push("/")}
               style={styles.goToProductsButton}
             >
-              Go to Products
+              Browse Products
             </Button>
           </View>
         ) : (
@@ -58,6 +62,7 @@ export default function Cart() {
                         Math.max(item.quantity - 1, 1)
                       )
                     }
+                    style={styles.iconButton}
                   />
                   <Text style={styles.quantityText}>{item.quantity}</Text>
                   <IconButton
@@ -66,18 +71,21 @@ export default function Cart() {
                     onPress={() =>
                       handleQuantityChange(item.productId, item.quantity + 1)
                     }
+                    style={styles.iconButton}
                   />
                 </View>
               </View>
-              <IconButton
-                icon="trash-can"
-                size={24}
+              <Button
+                mode="outlined"
                 onPress={() => {
                   dispatch(removeItem(item.productId));
                   dispatch(setShippingPrice(0));
                 }}
                 style={styles.removeButton}
-              />
+                labelStyle={styles.removeButtonText}
+              >
+                Remove
+              </Button>
             </Card>
           ))
         )}
@@ -91,7 +99,7 @@ export default function Cart() {
             onPress={() => router.push("/checkout")}
             disabled={items.length === 0}
           >
-            Continue to Checkout
+            Proceed to Checkout
           </Button>
         </View>
       </ScrollView>
@@ -107,6 +115,7 @@ const styles = StyleSheet.create({
   },
   cartList: {
     flex: 1,
+    marginBottom: 100,
   },
   emptyCart: {
     flex: 1,
@@ -118,17 +127,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#333",
     marginBottom: 20,
+    fontWeight: "600",
   },
   goToProductsButton: {
     width: 200,
     marginTop: 20,
+    backgroundColor: "#4CAF50", // Green color for positive action
   },
   cartItem: {
     marginBottom: 16,
-    borderRadius: 8,
+    borderRadius: 12,
     padding: 16,
     backgroundColor: "#f9f9f9",
-    elevation: 2,
+    elevation: 3,
   },
   cartItemContent: {
     flexDirection: "row",
@@ -145,7 +156,7 @@ const styles = StyleSheet.create({
   },
   productName: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "600",
     color: "#333",
   },
   productPrice: {
@@ -161,16 +172,24 @@ const styles = StyleSheet.create({
   quantityText: {
     marginHorizontal: 10,
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "600",
+    color: "#333",
+  },
+  iconButton: {
+    borderRadius: 8,
   },
   removeButton: {
-    position: "absolute",
-    top: 8,
-    right: 8,
+    marginTop: 10,
+    borderColor: "#E57373", // Red color for remove action
+    borderWidth: 1,
+    borderRadius: 8,
+  },
+  removeButtonText: {
+    color: "#E57373", // Red text color for remove action
   },
   totalPrice: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
     marginTop: 16,
     textAlign: "center",
     color: "#333",
@@ -183,7 +202,9 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
   },
   checkoutButton: {
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 20,
+    backgroundColor: "#4CAF50", // Green color for checkout
+    borderRadius: 8,
   },
 });

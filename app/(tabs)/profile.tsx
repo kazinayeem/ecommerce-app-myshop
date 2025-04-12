@@ -1,24 +1,33 @@
-import { useAppDispatch, useAppSelector } from "@/redux/hook/hooks";
-import { logout } from "@/redux/reducer/authReducer";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
-import Feather from "@expo/vector-icons/Feather";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { useHeaderHeight } from "@react-navigation/elements";
-import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { ActivityIndicator, Card, Divider } from "react-native-paper";
+import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import Feather from "@expo/vector-icons/Feather";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+
+import { useAppDispatch, useAppSelector } from "@/redux/hook/hooks";
+import { logout } from "@/redux/reducer/authReducer";
+
 export default function Profile() {
-  React.useEffect(() => {
+  const headerHeight = useHeaderHeight();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
     GoogleSignin.configure({
       webClientId:
         process.env.EXPO_WEB_CLIENT_ID ||
@@ -26,166 +35,164 @@ export default function Profile() {
       offlineAccess: true,
     });
   }, []);
-  const headerHeight = useHeaderHeight();
-  const router = useRouter();
-  const dispatch = useAppDispatch();
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
-  const user = useAppSelector((state) => state.auth.user);
-  const [loading, setLoading] = React.useState(false);
-  const logoutHandler = async () => {
-    setLoading(true);
 
+  const logoutHandler = async () => {
     try {
       setLoading(true);
       const currentUser = GoogleSignin.getCurrentUser();
       if (currentUser) {
         await GoogleSignin.revokeAccess();
-        if (await AsyncStorage.getItem("token")) {
-          await AsyncStorage.removeItem("token");
-        }
-        if (await AsyncStorage.getItem("user")) {
-          await AsyncStorage.removeItem("user");
-        }
-        dispatch(logout());
-        setLoading(false);
-        router.replace("/");
-        return;
-      } else {
-        await AsyncStorage.removeItem("token");
-        await AsyncStorage.removeItem("user");
-        dispatch(logout());
-        setLoading(false);
-        router.replace("/");
       }
+      await AsyncStorage.removeItem("token");
+      await AsyncStorage.removeItem("user");
+      dispatch(logout());
+      router.replace("/");
     } catch (error) {
-      setLoading(false);
       Alert.alert("Error", "Logout failed. Please try again.");
-      console.error("Error clearing AsyncStorage:", error);
+      console.error("Logout error:", error);
+    } finally {
+      setLoading(false);
     }
   };
+
   if (loading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#ffffff",
-        }}
-      >
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
-      <View style={[styles.container, { marginTop: headerHeight }]}>
+    <View style={styles.screen}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        style={[styles.container, { marginTop: headerHeight }]}
+      >
         {isAuthenticated ? (
           <Card.Content style={styles.profileContent}>
             <Image
-              width={80}
-              height={80}
               source={{
-                uri: user?.profilePic
-                  ? user?.profilePic
-                  : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+                uri:
+                  user?.profilePic ||
+                  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
               }}
               style={styles.profileImage}
             />
-
             <Text style={styles.email}>{user?.email}</Text>
-
             <Divider style={styles.divider} />
-
             <View style={styles.row}>
-              <TouchableOpacity
-                style={styles.button}
+              <NavButton
+                label="Profile"
+                icon={<Feather name="user" size={24} color="#5c8dff" />}
                 onPress={() => router.push("/user")}
-              >
-                <View style={styles.iconWraper}>
-                  <Feather name="user" size={24} color="#5c8dff" />
-                </View>
-                <Text style={styles.buttonText}>Profile</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => router.push("/user/order")}
-              >
-                <View style={styles.iconWraper}>
+              />
+              <NavButton
+                label="Orders"
+                icon={
                   <FontAwesome5 name="file-alt" size={24} color="#1fbc1e" />
-                </View>
-                <Text style={styles.buttonText}>Orders</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => router.push("/user/address")}
-              >
-                <View style={styles.iconWraper}>
+                }
+                onPress={() => router.push("/user/order")}
+              />
+              <NavButton
+                label="Address"
+                icon={
                   <FontAwesome name="address-book" size={24} color="#d26223" />
-                </View>
-                <Text style={styles.buttonText}>Address</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.button} onPress={logoutHandler}>
-                <View style={styles.iconWraper}>
-                  <MaterialIcons name="logout" size={24} color="#cda004" />
-                </View>
-                <Text style={styles.buttonText}>Logout</Text>
-              </TouchableOpacity>
+                }
+                onPress={() => router.push("/user/address")}
+              />
+              <NavButton
+                label="Logout"
+                icon={<MaterialIcons name="logout" size={24} color="#cda004" />}
+                onPress={logoutHandler}
+              />
             </View>
           </Card.Content>
         ) : (
-          <View style={styles.profileCard}>
-            <Text style={styles.guestText}>Guest User</Text>
+          <View style={styles.guestCard}>
+            <Text style={styles.guestText}>Welcome, Guest!</Text>
             <Divider style={styles.divider} />
             <View style={styles.row}>
               <TouchableOpacity
-                style={styles.button}
+                style={styles.authButton}
                 onPress={() => router.push("/auth/login")}
               >
-                <View style={styles.iconWraper}>
-                  <Feather name="log-in" size={24} color="#5c8dff" />
-                </View>
-                <Text style={styles.buttonText}>Login</Text>
+                <Feather name="log-in" size={24} color="#5c8dff" />
+                <Text style={styles.authText}>Login</Text>
               </TouchableOpacity>
-
               <TouchableOpacity
-                style={styles.button}
+                style={styles.authButton}
                 onPress={() => router.push("/auth/register")}
               >
-                <View style={styles.iconWraper}>
-                  <FontAwesome5 name="user-plus" size={24} color="#1fbc1e" />
-                </View>
-                <Text style={styles.buttonText}>Register</Text>
+                <FontAwesome5 name="user-plus" size={24} color="#1fbc1e" />
+                <Text style={styles.authText}>Register</Text>
               </TouchableOpacity>
             </View>
           </View>
         )}
-      </View>
+
+        <View
+          style={{
+            marginTop: 20,
+            marginBottom: 100,
+          }}
+        >
+          {[
+            { label: "FAQPage", route: "/profile/Faq" },
+            {
+              label: "Terms and Conditions",
+              route: "/profile/TermsAndConditions",
+            },
+            { label: "Privacy Policy", route: "/profile/PrivacyPolicy" },
+            { label: "Contact Us", route: "/profile/Contact" },
+            { label: "RefundPolicy", route: "/profile/RefundPolicy" },
+            { label: "About", route: "/profile/About" },
+          ].map((item, idx) => (
+            <TouchableOpacity
+              key={idx}
+              style={styles.infoCard}
+              onPress={() => router.push(item.route as any)}
+            >
+              <Text style={styles.infoText}>{item.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
+const NavButton = ({
+  label,
+  icon,
+  onPress,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  onPress: () => void;
+}) => (
+  <TouchableOpacity style={styles.button} onPress={onPress}>
+    <View style={styles.iconWraper}>{icon}</View>
+    <Text style={styles.buttonText}>{label}</Text>
+  </TouchableOpacity>
+);
+
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
     backgroundColor: "#ffffff",
+  },
+  container: {
+    flex: 1,
     padding: 20,
   },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-  },
-  profileCard: {
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: "#ffffff",
-    borderRadius: 15,
-    elevation: 2,
-    padding: 20,
-    marginBottom: 20,
   },
   profileContent: {
     alignItems: "center",
@@ -198,36 +205,60 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: "#e2e2e2",
   },
-  name: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 5,
-  },
   email: {
     fontSize: 16,
     color: "#666",
     marginBottom: 20,
   },
+  guestCard: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+    marginBottom: 24,
+  },
+  authButton: {
+    backgroundColor: "#f9f9f9",
+    borderRadius: 12,
+    padding: 16,
+    alignItems: "center",
+    width: "48%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  authText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: "#333",
+  },
+  guestText: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#333",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: 10,
+  },
   button: {
     alignItems: "center",
+    flex: 1,
   },
   buttonText: {
     fontSize: 13,
     color: "#787878",
-  },
-
-  guestText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 20,
-  },
-  divider: {
-    marginVertical: 15,
-    width: "100%",
-    borderColor: "#e0e0e0",
-    borderWidth: 0.5,
+    marginTop: 6,
   },
   iconWraper: {
     backgroundColor: "#f2f3f5",
@@ -235,5 +266,23 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignItems: "center",
     justifyContent: "center",
+  },
+  divider: {
+    marginVertical: 15,
+    width: "100%",
+    borderColor: "#e0e0e0",
+    borderWidth: 0.5,
+  },
+  infoCard: {
+    backgroundColor: "#f2f3f5",
+    padding: 20,
+    borderRadius: 15,
+    marginBottom: 16,
+    alignItems: "center",
+  },
+  infoText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
   },
 });

@@ -47,75 +47,45 @@ export default function PaymentPage() {
 
   const submitOrder = async () => {
     try {
-      if (paymentMethod === "cash_on_delivery") {
-        const orderData = {
-          userId: user?.id,
-          products: cartItems,
-          totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
-          address: selectedAddress,
-          deliveryCharge: shippingPrice,
-          paidAmount: paymentMethod === "cash_on_delivery" ? 0 : totalPrice,
-          paymentMethod,
-          dueAmount: ["bkash", "nagad"].includes(paymentMethod)
-            ? 0
-            : totalPrice,
-          transactionId,
-          number: senderNumber,
-        };
-        await addorders(orderData).unwrap();
-        dispatch(clearCart());
-        dispatch(setShippingPrice(0));
-        setSelectedAddress("");
-        setPaymentMethod("");
-        setTransactionId("");
-        setSenderNumber("");
-        setIsDialogVisible(false);
-        Alert.alert(
-          "Order Placed",
-          "Your order has been placed successfully.",
-          [
-            {
-              text: "OK",
-              onPress: () => {
-                router.replace("/user/order");
-              },
-            },
-          ]
-        );
-      } else if (paymentMethod === "online") {
-        const orderData = {
-          userId: user?.id,
-          products: cartItems,
-          totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
-          address: selectedAddress,
-          deliveryCharge: shippingPrice,
-          paidAmount: 0,
-          paymentMethod,
-          dueAmount: totalPrice,
-        };
-        const response = await addorders(orderData).unwrap();
-        if (response?.GatewayPageURL) {
-          const redirectUrl = response.GatewayPageURL;
-          router.push({
-            pathname: "/checkout/makepayment",
-            params: { redirectUrl },
-          });
-        }
-        dispatch(clearCart());
-        dispatch(setShippingPrice(0));
-        setSelectedAddress("");
-        setPaymentMethod("");
-        setTransactionId("");
-        setSenderNumber("");
-        setIsDialogVisible(false);
-      }
+      const orderData = {
+        userId: user?.id,
+        products: cartItems,
+        totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
+        address: selectedAddress,
+        deliveryCharge: shippingPrice,
+        paidAmount: paymentMethod === "cash_on_delivery" ? 0 : totalPrice,
+        paymentMethod,
+        dueAmount: ["bkash", "nagad"].includes(paymentMethod) ? 0 : totalPrice,
+        transactionId,
+        number: senderNumber,
+      };
+
+      await addorders(orderData).unwrap();
+      dispatch(clearCart());
+      dispatch(setShippingPrice(0));
+      setSelectedAddress("");
+      setPaymentMethod("");
+      setTransactionId("");
+      setSenderNumber("");
+      setIsDialogVisible(false);
+      Alert.alert("Order Placed", "Your order has been placed successfully.", [
+        {
+          text: "OK",
+          onPress: () => router.replace("/user/order"),
+        },
+      ]);
     } catch {
       Alert.alert("Error", "Failed to place order. Please try again.");
     }
   };
 
   if (isLoadingAddresses) {
-    return <Text style={styles.loadingText}>Loading addresses...</Text>;
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#6200ea" />
+        <Text style={styles.loadingText}>Loading addresses...</Text>
+      </View>
+    );
   }
 
   if (isErrorAddresses) {
@@ -125,37 +95,40 @@ export default function PaymentPage() {
   return (
     <ScrollView style={styles.container}>
       {isAdding && (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
+        <View style={styles.centered}>
           <ActivityIndicator size="large" color="#6200ea" />
           <Text style={styles.loadingText}>Placing order...</Text>
         </View>
       )}
-      <View style={styles.priceContainer}>
-        <View style={{ flex: 1 }}>
+
+      {/* Price Details Section with Row Layout */}
+      <Card style={styles.priceCard}>
+        <View style={styles.priceRow}>
           <Text style={styles.sectionTitle}>Total:</Text>
           <Text style={styles.totalPrice}>
             {"\u09F3"}
             {totalPrice.toLocaleString()}
           </Text>
         </View>
-        <View style={{ flex: 1 }}>
+
+        <View style={styles.priceRow}>
           <Text style={styles.sectionTitle}>Shipping Charge:</Text>
           <Text style={styles.shippingCharge}>
             {"\u09F3"}
             {shippingPrice.toLocaleString()}
           </Text>
         </View>
-        <View style={{ flex: 1 }}>
+
+        <View style={styles.priceRow}>
           <Text style={styles.sectionTitle}>Final Total:</Text>
           <Text style={styles.finalTotal}>
             {"\u09F3"}
             {finalPrice.toLocaleString()}
           </Text>
         </View>
-      </View>
+      </Card>
 
+      {/* Address and Payment Method Selection Cards */}
       <Card style={styles.card}>
         <Text style={styles.sectionTitle}>Select Address</Text>
         {addresses?.length > 0 ? (
@@ -163,13 +136,13 @@ export default function PaymentPage() {
             onValueChange={handleAddressSelection}
             value={selectedAddress}
           >
-            {addresses?.map((address: Address) => (
+            {addresses.map((address: Address) => (
               <RadioButton.Item
-                style={{ padding: 10 }}
-                labelStyle={{ color: "black", fontSize: 10 }}
+                style={styles.radioButton}
+                labelStyle={styles.radioButtonLabel}
                 key={address._id}
                 label={`${address.addressLine1}, ${address.district}, ${address.division}, ${address.upazilla}, ${address.zipCode}, ${address.phoneNumber}`}
-                value={address._id as string}
+                value={address._id}
               />
             ))}
           </RadioButton.Group>
@@ -177,7 +150,11 @@ export default function PaymentPage() {
           <>
             <Text>No address found. Please add one.</Text>
             <Link href="/user/address/add-address">
-              <FAB icon="plus" label="Add Address" />
+              <FAB
+                icon="plus"
+                label="Add Address"
+                style={styles.addAddressFab}
+              />
             </Link>
           </>
         )}
@@ -190,65 +167,49 @@ export default function PaymentPage() {
           value={paymentMethod}
         >
           <RadioButton.Item
-            label="online"
+            label="Online"
             value="online"
-            labelStyle={{ color: "black" }}
+            labelStyle={styles.radioButtonLabel}
           />
-
           <RadioButton.Item
             label="Cash on Delivery"
             value="cash_on_delivery"
-            labelStyle={{ color: "black" }}
+            labelStyle={styles.radioButtonLabel}
           />
         </RadioButton.Group>
       </Card>
 
-      <View style={{ marginBottom: 50 }}>
+      {/* Order Placement Button */}
+      <View style={styles.buttonSection}>
         <Button
           mode="contained"
           onPress={() => setIsDialogVisible(true)}
           disabled={!selectedAddress || !paymentMethod}
+          style={styles.placeOrderButton}
         >
           {isAdding ? "Placing Order..." : "Place Order"}
         </Button>
       </View>
 
+      {/* Confirmation Dialog */}
       <Portal theme={{ colors: { primary: "#fff" } }}>
         <Dialog
-          style={{ backgroundColor: "white" }}
+          style={styles.dialog}
           visible={isDialogVisible}
           onDismiss={() => setIsDialogVisible(false)}
         >
-          <Dialog.Title
-            style={{
-              textAlign: "center",
-              fontSize: 18,
-              fontWeight: "bold",
-              color: "#333",
-            }}
-          >
-            Confirm Order
-          </Dialog.Title>
-          <Dialog.Content style={{ padding: 20, alignItems: "center" }}>
+          <Dialog.Title style={styles.dialogTitle}>Confirm Order</Dialog.Title>
+          <Dialog.Content style={styles.dialogContent}>
             <Text>Are you sure you want to place this order?</Text>
           </Dialog.Content>
-          <Dialog.Actions style={{ justifyContent: "space-around" }}>
+          <Dialog.Actions style={styles.dialogActions}>
             <Button
-              style={{
-                backgroundColor: "#f44336",
-                borderRadius: 5,
-              }}
+              style={styles.cancelButton}
               onPress={() => setIsDialogVisible(false)}
             >
               Cancel
             </Button>
-            <Button
-              style={{
-                backgroundColor: "#4CAF50",
-                borderRadius: 5,
-              }}
-              onPress={submitOrder}
-            >
+            <Button style={styles.confirmButton} onPress={submitOrder}>
               Confirm
             </Button>
           </Dialog.Actions>
@@ -261,18 +222,64 @@ export default function PaymentPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     padding: 16,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
     textAlign: "center",
+    fontSize: 16,
+    color: "#6200ea",
+  },
+  errorText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "red",
+  },
+  priceCard: {
+    marginVertical: 20,
+    padding: 16,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  priceRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 12,
+    alignItems: "center",
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
     color: "#333",
+    marginBottom: 6,
+  },
+  totalPrice: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#007BFF",
+  },
+  shippingCharge: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#FF6347",
+  },
+  finalTotal: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#28A745",
   },
   card: {
-    padding: 12,
     marginVertical: 12,
+    padding: 16,
     backgroundColor: "#fff",
     borderRadius: 8,
     shadowColor: "#000",
@@ -280,55 +287,47 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
-
-  input: {
-    marginVertical: 8,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 6,
+  radioButton: {
+    paddingVertical: 10,
+  },
+  radioButtonLabel: {
     color: "#333",
+    fontSize: 14,
   },
-  loadingText: {
-    textAlign: "center",
-    fontSize: 16,
-    color: "#666",
+  addAddressFab: {
+    marginTop: 12,
   },
-  errorText: {
-    textAlign: "center",
-    fontSize: 16,
-    color: "red",
-  },
-
-  priceContainer: {
-    marginVertical: 20,
-    paddingHorizontal: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
+  buttonSection: {
+    marginBottom: 50,
     alignItems: "center",
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 6,
+  placeOrderButton: {
+    backgroundColor: "#4CAF50",
+    borderRadius: 8,
+    width: "100%",
+    paddingVertical: 12,
   },
-  totalPrice: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#007BFF",
-    marginBottom: 12,
+  dialog: {
+    backgroundColor: "white",
   },
-  shippingCharge: {
+  dialogTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#FF6347",
-    marginBottom: 12,
+    textAlign: "center",
   },
-  finalTotal: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#28A745", // Green for final total
-    marginBottom: 12,
+  dialogContent: {
+    paddingVertical: 20,
+    alignItems: "center",
+  },
+  dialogActions: {
+    justifyContent: "space-around",
+  },
+  cancelButton: {
+    backgroundColor: "#f44336",
+    borderRadius: 5,
+  },
+  confirmButton: {
+    backgroundColor: "#4CAF50",
+    borderRadius: 5,
   },
 });

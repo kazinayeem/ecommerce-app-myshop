@@ -11,12 +11,14 @@ This is a cross-platform **E-Commerce Mobile Application** built using **React N
 ### 👤 Customer App
 
 - **User System**
+
   - Login/Register using **JWT Authentication**
   - **Google Login** (via Expo Google Auth)
   - Profile Management (Edit/Delete)
   - Address Book (Max 5 addresses per user)
 
 - **Shopping Experience**
+
   - Internet connectivity check on app startup
   - Product Browsing with Variants (RAM, ROM, Size, Color)
   - Category Hierarchy (Main Categories and Sub-Categories)
@@ -27,6 +29,7 @@ This is a cross-platform **E-Commerce Mobile Application** built using **React N
   - Cart Functionality
   - Token-Protected Checkout Process
   - Order History with Details and Status Tracking
+  - If payment fails or is canceled, the order is automatically deleted after 30 minutes
 
 ---
 
@@ -89,3 +92,4 @@ cp .env.example .env
 
 # 4. Run the app
 expo start       # or npm start
+```

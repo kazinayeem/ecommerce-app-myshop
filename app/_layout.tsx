@@ -37,6 +37,7 @@ export default function RootLayout() {
         <Stack.Screen name="success" options={{ headerShown: false }} />
         <Stack.Screen name="fail" options={{ headerShown: false }} />
         <Stack.Screen name="cancel" options={{ headerShown: false }} />
+        <Stack.Screen name="profile" options={{ headerShown: false }} />
       </Stack>
     </MainProvider>
   );
