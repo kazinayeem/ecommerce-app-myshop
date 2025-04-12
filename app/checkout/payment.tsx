@@ -45,35 +45,101 @@ export default function PaymentPage() {
     dispatch(setShippingPrice(selected?.district === "Dhaka" ? 60 : 120));
   };
 
+  // const submitOrder = async () => {
+  //   try {
+  //     const orderData = {
+  //       userId: user?.id,
+  //       products: cartItems,
+  //       totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
+  //       address: selectedAddress,
+  //       deliveryCharge: shippingPrice,
+  //       paidAmount: paymentMethod === "cash_on_delivery" ? 0 : totalPrice,
+  //       paymentMethod,
+  //       dueAmount: ["bkash", "nagad"].includes(paymentMethod) ? 0 : totalPrice,
+  //       transactionId,
+  //       number: senderNumber,
+  //     };
+
+  //     await addorders(orderData).unwrap();
+  //     dispatch(clearCart());
+  //     dispatch(setShippingPrice(0));
+  //     setSelectedAddress("");
+  //     setPaymentMethod("");
+  //     setTransactionId("");
+  //     setSenderNumber("");
+  //     setIsDialogVisible(false);
+  //     Alert.alert("Order Placed", "Your order has been placed successfully.", [
+  //       {
+  //         text: "OK",
+  //         onPress: () => router.replace("/user/order"),
+  //       },
+  //     ]);
+  //   } catch {
+  //     Alert.alert("Error", "Failed to place order. Please try again.");
+  //   }
+  // };
   const submitOrder = async () => {
     try {
-      const orderData = {
-        userId: user?.id,
-        products: cartItems,
-        totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
-        address: selectedAddress,
-        deliveryCharge: shippingPrice,
-        paidAmount: paymentMethod === "cash_on_delivery" ? 0 : totalPrice,
-        paymentMethod,
-        dueAmount: ["bkash", "nagad"].includes(paymentMethod) ? 0 : totalPrice,
-        transactionId,
-        number: senderNumber,
-      };
-
-      await addorders(orderData).unwrap();
-      dispatch(clearCart());
-      dispatch(setShippingPrice(0));
-      setSelectedAddress("");
-      setPaymentMethod("");
-      setTransactionId("");
-      setSenderNumber("");
-      setIsDialogVisible(false);
-      Alert.alert("Order Placed", "Your order has been placed successfully.", [
-        {
-          text: "OK",
-          onPress: () => router.replace("/user/order"),
-        },
-      ]);
+      if (paymentMethod === "cash_on_delivery") {
+        const orderData = {
+          userId: user?.id,
+          products: cartItems,
+          totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
+          address: selectedAddress,
+          deliveryCharge: shippingPrice,
+          paidAmount: paymentMethod === "cash_on_delivery" ? 0 : totalPrice,
+          paymentMethod,
+          dueAmount: paymentMethod === "cash_on_delivery" ? totalPrice : 0,
+          transactionId,
+          number: senderNumber,
+        };
+        await addorders(orderData).unwrap();
+        dispatch(clearCart());
+        dispatch(setShippingPrice(0));
+        setSelectedAddress("");
+        setPaymentMethod("");
+        setTransactionId("");
+        setSenderNumber("");
+        setIsDialogVisible(false);
+        Alert.alert(
+          "Order Placed",
+          "Your order has been placed successfully.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                router.replace("/user/order");
+              },
+            },
+          ]
+        );
+      } else if (paymentMethod === "online" || paymentMethod === "Online") {
+        const orderData = {
+          userId: user?.id,
+          products: cartItems,
+          totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
+          address: selectedAddress,
+          deliveryCharge: shippingPrice,
+          paidAmount: 0,
+          paymentMethod,
+          dueAmount: totalPrice,
+        };
+        const response = await addorders(orderData).unwrap();
+        if (response?.GatewayPageURL) {
+          const redirectUrl = response.GatewayPageURL;
+          router.push({
+            pathname: "/checkout/makepayment",
+            params: { redirectUrl },
+          });
+        }
+        dispatch(clearCart());
+        dispatch(setShippingPrice(0));
+        setSelectedAddress("");
+        setPaymentMethod("");
+        setTransactionId("");
+        setSenderNumber("");
+        setIsDialogVisible(false);
+      }
     } catch {
       Alert.alert("Error", "Failed to place order. Please try again.");
     }
