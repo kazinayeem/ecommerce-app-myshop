@@ -17,11 +17,11 @@ import {
 } from "react-native-paper";
 
 export default function PaymentPage() {
-  const [isDialogVisible, setIsDialogVisible] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [transactionId, setTransactionId] = useState("");
-  const [senderNumber, setSenderNumber] = useState("");
+  const [isDialogVisible, setIsDialogVisible] = useState<boolean>(false);
+  const [selectedAddress, setSelectedAddress] = useState<string>("");
+  const [paymentMethod, setPaymentMethod] = useState<string>("");
+  const [transactionId, setTransactionId] = useState<string>("");
+  const [senderNumber, setSenderNumber] = useState<string>("");
   const dispatch = useAppDispatch();
 
   const {
@@ -45,102 +45,80 @@ export default function PaymentPage() {
     dispatch(setShippingPrice(selected?.district === "Dhaka" ? 60 : 120));
   };
 
-  // const submitOrder = async () => {
-  //   try {
-  //     const orderData = {
-  //       userId: user?.id,
-  //       products: cartItems,
-  //       totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
-  //       address: selectedAddress,
-  //       deliveryCharge: shippingPrice,
-  //       paidAmount: paymentMethod === "cash_on_delivery" ? 0 : totalPrice,
-  //       paymentMethod,
-  //       dueAmount: ["bkash", "nagad"].includes(paymentMethod) ? 0 : totalPrice,
-  //       transactionId,
-  //       number: senderNumber,
-  //     };
-
-  //     await addorders(orderData).unwrap();
-  //     dispatch(clearCart());
-  //     dispatch(setShippingPrice(0));
-  //     setSelectedAddress("");
-  //     setPaymentMethod("");
-  //     setTransactionId("");
-  //     setSenderNumber("");
-  //     setIsDialogVisible(false);
-  //     Alert.alert("Order Placed", "Your order has been placed successfully.", [
-  //       {
-  //         text: "OK",
-  //         onPress: () => router.replace("/user/order"),
-  //       },
-  //     ]);
-  //   } catch {
-  //     Alert.alert("Error", "Failed to place order. Please try again.");
-  //   }
-  // };
   const submitOrder = async () => {
     try {
+      if (!paymentMethod || !selectedAddress) {
+        Alert.alert(
+          "Missing Info",
+          "Please select payment method and address."
+        );
+        return;
+      }
+
+      const commonOrderData = {
+        userId: user?.id,
+        products: cartItems,
+        totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
+        address: selectedAddress,
+        deliveryCharge: shippingPrice,
+        paymentMethod,
+      };
+
+      let orderData;
+
       if (paymentMethod === "cash_on_delivery") {
-        const orderData = {
-          userId: user?.id,
-          products: cartItems,
-          totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
-          address: selectedAddress,
-          deliveryCharge: shippingPrice,
-          paidAmount: paymentMethod === "cash_on_delivery" ? 0 : totalPrice,
-          paymentMethod,
-          dueAmount: paymentMethod === "cash_on_delivery" ? totalPrice : 0,
+        orderData = {
+          ...commonOrderData,
+          paidAmount: 0,
+          dueAmount: totalPrice,
           transactionId,
           number: senderNumber,
         };
+
         await addorders(orderData).unwrap();
-        dispatch(clearCart());
-        dispatch(setShippingPrice(0));
-        setSelectedAddress("");
-        setPaymentMethod("");
-        setTransactionId("");
-        setSenderNumber("");
-        setIsDialogVisible(false);
+
         Alert.alert(
           "Order Placed",
           "Your order has been placed successfully.",
           [
             {
               text: "OK",
-              onPress: () => {
-                router.replace("/user/order");
-              },
+              onPress: () => router.replace("/user/order"),
             },
           ]
         );
-      } else if (paymentMethod === "online" || paymentMethod === "Online") {
-        const orderData = {
-          userId: user?.id,
-          products: cartItems,
-          totalPrice: totalPrice - (discountPrice || 0) + (shippingPrice || 0),
-          address: selectedAddress,
-          deliveryCharge: shippingPrice,
+      }
+
+      if (paymentMethod === "online") {
+        orderData = {
+          ...commonOrderData,
           paidAmount: 0,
-          paymentMethod,
           dueAmount: totalPrice,
         };
+
         const response = await addorders(orderData).unwrap();
+
         if (response?.GatewayPageURL) {
-          const redirectUrl = response.GatewayPageURL;
           router.push({
             pathname: "/checkout/makepayment",
-            params: { redirectUrl },
+            params: { redirectUrl: response.GatewayPageURL },
           });
+        } else {
+          Alert.alert("Error", "Failed to create order. Please try again.");
+          return;
         }
-        dispatch(clearCart());
-        dispatch(setShippingPrice(0));
-        setSelectedAddress("");
-        setPaymentMethod("");
-        setTransactionId("");
-        setSenderNumber("");
-        setIsDialogVisible(false);
       }
-    } catch {
+
+      // Reset state and cart after successful flow
+      dispatch(clearCart());
+      dispatch(setShippingPrice(0));
+      setSelectedAddress("");
+      setPaymentMethod("");
+      setTransactionId("");
+      setSenderNumber("");
+      setIsDialogVisible(false);
+    } catch (error) {
+      console.error("Order error:", error);
       Alert.alert("Error", "Failed to place order. Please try again.");
     }
   };
