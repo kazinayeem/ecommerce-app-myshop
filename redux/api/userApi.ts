@@ -28,6 +28,38 @@ export const userApi = createApi({
         body: userData,
       }),
     }),
+    // reset password
+    resetPassword: builder.mutation({
+      query: (userData) => ({
+        url: "/users/reset-password",
+        method: "POST",
+        body: userData,
+      }),
+    }),
+    // send otp
+    sendOtp: builder.mutation({
+      query: (userData) => ({
+        url: "/users/send-otp",
+        method: "POST",
+        body: userData,
+      }),
+    }),
+    //  verify otp
+    verifyOtp: builder.mutation({
+      query: (userData) => ({
+        url: "/users/verify-otp",
+        method: "POST",
+        body: userData,
+      }),
+    }),
+    // change password
+    changePassword: builder.mutation({
+      query: (userData) => ({
+        url: "/users/change-password",
+        method: "POST",
+        body: userData,
+      }),
+    }),
     getUserById: builder.query({
       query: (id) => `users/${id}`,
       providesTags: (result, error, id) => [{ type: "user", id }],
@@ -50,6 +82,10 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useLoginwithGoogleMutation,
+  useResetPasswordMutation,
+  useSendOtpMutation,
+  useVerifyOtpMutation,
+  useChangePasswordMutation,
 } = userApi;
 
 export default userApi;

@@ -33,6 +33,14 @@ export default function Layout() {
         })}
       />
       <Stack.Screen name="register" options={{ title: "Register" }} />
+      <Stack.Screen
+        name="reset-password"
+        options={{ title: "Reset Password" }}
+      />
+      <Stack.Screen
+        name="ResetPasswordScreen"
+        options={{ title: "Change Password" }}
+      />
     </Stack>
   );
 }

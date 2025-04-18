@@ -115,15 +115,28 @@ export default function Login() {
       <Text style={styles.orText}>- OR Continue with -</Text>
       <GoogleLogin />
       <View style={styles.footer}>
-        <Text style={styles.footerText}>Create An Account</Text>
-        <TouchableOpacity>
-          <Text
-            style={styles.signUpText}
-            onPress={() => router.push("/auth/register")}
-          >
-            Sign Up
-          </Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text style={styles.footerText}>Create An Account</Text>
+          <TouchableOpacity>
+            <Text
+              style={styles.signUpText}
+              onPress={() => router.push("/auth/register")}
+            >
+              Sign Up
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View>
+          <TouchableOpacity>
+            <Text
+              style={styles.signUpText}
+              onPress={() => router.push("/auth/ResetPasswordScreen")}
+            >
+              Reset Password
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
@@ -204,7 +217,8 @@ const styles = StyleSheet.create({
     height: 30,
   },
   footer: {
-    flexDirection: "row",
+    flexDirection: "column",
+    alignItems: "center",
     justifyContent: "center",
     marginTop: 20,
     gap: 10,

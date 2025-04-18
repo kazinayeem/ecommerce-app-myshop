@@ -3,12 +3,13 @@ import {
   useUpdateUserMutation,
 } from "@/redux/api/userApi";
 import { useAppSelector } from "@/redux/hook/hooks";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Button, FAB, TextInput } from "react-native-paper";
+import { Button, Divider, FAB, TextInput } from "react-native-paper";
 
 export default function Index() {
+  const router = useRouter();
   const user = useAppSelector((state) => state.auth.user);
   const { data, isLoading, isError, refetch, isSuccess } = useGetUserByIdQuery(
     user?.id as string
@@ -133,11 +134,23 @@ export default function Index() {
           </View>
         </>
       )}
+      <FAB
+        style={styles.fab}
+        icon="lock-reset"
+        onPress={() => router.push("/auth/reset-password")}
+        label="Change Password"
+        color="white"
+        theme={{ colors: { primary: "#6200ea" } }}
+      />
+      <Divider />
 
+      {/* Edit button */}
       {/* Floating Action Button to trigger edit */}
       {!isEditing && (
         <FAB style={styles.fab} icon="pencil" onPress={handleEdit} />
       )}
+
+      {/* chnage password */}
     </View>
   );
 }
@@ -158,8 +171,8 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 12,
-    backgroundColor: "#fff", // White background for inputs
-    color: "black", // Black text color for inputs
+    backgroundColor: "#fff",
+    color: "black",
   },
   buttonsContainer: {
     flexDirection: "row",
