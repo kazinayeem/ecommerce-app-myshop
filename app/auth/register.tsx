@@ -138,13 +138,15 @@ export default function Register() {
       {/* Create Account */}
        <View style={styles.footer}>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={styles.footerText}>Create An Account</Text>
+                <Text style={styles.footerText}>
+                  Already have an account?
+                </Text>
                 <TouchableOpacity>
                   <Text
                     style={styles.signUpText}
-                    onPress={() => router.push("/auth/register")}
+                    onPress={() => router.push("/auth/login")}
                   >
-                    Sign Up
+                    Login
                   </Text>
                 </TouchableOpacity>
               </View>
